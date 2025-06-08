@@ -96,6 +96,12 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
     (interactive)
     (load-file user-init-file))
 #+end_src
+** Rainbow Parentheses
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters)
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+#+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
   (use-package counsel)
@@ -129,4 +135,18 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 ** Magit
 #+begin_src emacs-lisp
   (use-package magit)
+#+end_src
+** Vundo
+Visual undo tree for Emacs
+#+begin_src emacs-lisp
+  (use-package vundo)
+#+end_src
+** Company
+#+begin_src emacs-lisp
+  (use-package company)
+  (add-hook 'after-init-hook 'global-company-mode)
+#+end_src
+** Eglot / LSP stuff
+#+begin_src emacs-lisp
+  (add-hook 'python-mode-hook 'eglot-ensure)
 #+end_src

@@ -64,6 +64,10 @@
   (interactive)
   (load-file user-init-file))
 
+(use-package rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+
 (use-package counsel)
 
 (use-package ivy
@@ -87,3 +91,10 @@
 (add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
 
 (use-package magit)
+
+(use-package vundo)
+
+(use-package company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(add-hook 'python-mode-hook 'eglot-ensure)
