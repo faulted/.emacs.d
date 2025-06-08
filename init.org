@@ -89,6 +89,11 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
 #+end_src
+** org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :defer t)
+#+end_src
 ** Create function to allow for a quick reload of init.el
 #+begin_src emacs-lisp
   (defun reload-init-file ()
@@ -98,7 +103,8 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 #+end_src
 ** Rainbow Parentheses
 #+begin_src emacs-lisp
-  (use-package rainbow-delimiters)
+  (use-package rainbow-delimiters
+    :defer t)
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 #+end_src
@@ -117,6 +123,22 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
       :bind
       (("M-C-s" . swiper)))
 #+end_src
+** Treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t
+    :config
+    (progn
+      (treemacs-follow-mode t))
+    :bind
+    (:map global-map
+  	("C-x t t" . treemacs)))
+
+  (use-package treemacs-nerd-icons
+    :after (treemacs)
+    :config
+    (treemacs-load-theme "nerd-icons"))
+#+end_src
 * PDF viewing
 ** tablist
 #+begin_src emacs-lisp
@@ -134,12 +156,14 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 * Development
 ** Magit
 #+begin_src emacs-lisp
-  (use-package magit)
+  (use-package magit
+    :defer t)
 #+end_src
 ** Vundo
 Visual undo tree for Emacs
 #+begin_src emacs-lisp
-  (use-package vundo)
+  (use-package vundo
+    :defer t)
 #+end_src
 ** Company
 #+begin_src emacs-lisp

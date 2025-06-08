@@ -59,12 +59,16 @@
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
 
+(use-package org-roam
+  :defer t)
+
 (defun reload-init-file ()
   "Reload the user init file"
   (interactive)
   (load-file user-init-file))
 
-(use-package rainbow-delimiters)
+(use-package rainbow-delimiters
+  :defer t)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
@@ -81,6 +85,20 @@
     :bind
     (("M-C-s" . swiper)))
 
+(use-package treemacs
+  :defer t
+  :config
+  (progn
+    (treemacs-follow-mode t))
+  :bind
+  (:map global-map
+	("C-x t t" . treemacs)))
+
+(use-package treemacs-nerd-icons
+  :after (treemacs)
+  :config
+  (treemacs-load-theme "nerd-icons"))
+
 (use-package tablist)
 
 (use-package pdf-tools)
@@ -90,9 +108,11 @@
   (display-line-numbers-mode -1))
 (add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
 
-(use-package magit)
+(use-package magit
+  :defer t)
 
-(use-package vundo)
+(use-package vundo
+  :defer t)
 
 (use-package company)
 (add-hook 'after-init-hook 'global-company-mode)
