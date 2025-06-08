@@ -145,6 +145,7 @@ Visual undo tree for Emacs
 #+begin_src emacs-lisp
   (use-package company)
   (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-tooltip-idle-delay 0.2)
 #+end_src
 ** Eglot / LSP stuff
 For Python, you will need to run "pip install python-lsp-server". Eglot should handle it from there.

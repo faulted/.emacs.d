@@ -96,5 +96,6 @@
 
 (use-package company)
 (add-hook 'after-init-hook 'global-company-mode)
+(setq company-tooltip-idle-delay 0.2)
 
 (add-hook 'python-mode-hook 'eglot-ensure)
