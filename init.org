@@ -147,6 +147,7 @@ Visual undo tree for Emacs
   (add-hook 'after-init-hook 'global-company-mode)
 #+end_src
 ** Eglot / LSP stuff
+For Python, you will need to run "pip install python-lsp-server". Eglot should handle it from there.
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'eglot-ensure)
 #+end_src
