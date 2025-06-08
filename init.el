@@ -57,6 +57,12 @@
 
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
+
+(defun reload-init-file ()
+  "Reload the user init file"
+  (interactive)
+  (load-file user-init-file))
 
 (use-package counsel)
 
@@ -70,5 +76,14 @@
   (use-package swiper
     :bind
     (("M-C-s" . swiper)))
+
+(use-package tablist)
+
+(use-package pdf-tools)
+(pdf-loader-install)
+
+(defun my-pdf-mode-hook ()
+  (display-line-numbers-mode -1))
+(add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
 
 (use-package magit)
