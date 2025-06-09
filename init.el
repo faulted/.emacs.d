@@ -75,6 +75,8 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
+(global-set-key (kbd "C-x O") 'other-frame)
+
 (use-package counsel)
 
 (use-package ivy
