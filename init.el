@@ -99,15 +99,6 @@
   :config
   (treemacs-load-theme "nerd-icons"))
 
-(use-package tablist)
-
-(use-package pdf-tools)
-(pdf-loader-install)
-
-(defun my-pdf-mode-hook ()
-  (display-line-numbers-mode -1))
-(add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
-
 (use-package magit
   :defer t)
 

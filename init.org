@@ -139,20 +139,6 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
     :config
     (treemacs-load-theme "nerd-icons"))
 #+end_src
-* PDF viewing
-** tablist
-#+begin_src emacs-lisp
-  (use-package tablist)
-#+end_src
-** pdf-tools
-#+begin_src emacs-lisp
-  (use-package pdf-tools)
-  (pdf-loader-install)
-
-  (defun my-pdf-mode-hook ()
-    (display-line-numbers-mode -1))
-  (add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
-#+end_src
 * Development
 ** Magit
 #+begin_src emacs-lisp
