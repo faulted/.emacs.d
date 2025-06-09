@@ -39,6 +39,9 @@
   ((doom-modeline-height 30)
    (doom-modeline-total-line-number t)))
 
+;; Automatically revert the buffer to keep the Git branch in the modeline up to date.
+(setq auto-revert-check-vc-info t)
+
 ;; Put backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
   '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
