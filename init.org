@@ -111,6 +111,10 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 #+end_src
+* Keybindings
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x O") 'other-frame)
+#+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
   (use-package counsel)
