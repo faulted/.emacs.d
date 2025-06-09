@@ -160,10 +160,13 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
     :defer t)
 #+end_src
 ** Vundo
-Visual undo tree for Emacs
+Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vundo tree.
 #+begin_src emacs-lisp
   (use-package vundo
-    :defer t)
+    :defer t
+    :bind
+    (:map global-map
+  	("C-x u" . vundo)))
 #+end_src
 ** Company
 #+begin_src emacs-lisp
@@ -175,4 +178,11 @@ Visual undo tree for Emacs
 For Python, you will need to run "pip install python-lsp-server". Eglot should handle it from there.
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook 'eglot-ensure)
+#+end_src
+** Projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :defer t)
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+end_src

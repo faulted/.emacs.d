@@ -112,10 +112,18 @@
   :defer t)
 
 (use-package vundo
-  :defer t)
+  :defer t
+  :bind
+  (:map global-map
+	("C-x u" . vundo)))
 
 (use-package company)
 (add-hook 'after-init-hook 'global-company-mode)
 (setq company-tooltip-idle-delay 0.2)
 
 (add-hook 'python-mode-hook 'eglot-ensure)
+
+(use-package projectile
+  :defer t)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
