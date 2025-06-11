@@ -222,3 +222,8 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+end_src
+** Vterm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :ensure t)
+#+end_src
