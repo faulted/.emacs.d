@@ -200,6 +200,8 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode)
           (c-mode . c-ts-mode)))
+
+  (use-package pyvenv)
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp

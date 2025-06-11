@@ -147,6 +147,8 @@
       '((python-mode . python-ts-mode)
         (c-mode . c-ts-mode)))
 
+(use-package pyvenv)
+
 (use-package projectile
   :defer t)
 (projectile-mode +1)
