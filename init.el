@@ -1,16 +1,16 @@
 ;; Initialize package sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")
-			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
 
 ;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
-   (package-install 'use-package))
+  (package-install 'use-package))
 (require 'use-package)
 (setq use-package-always-ensure t)
 
@@ -27,7 +27,7 @@
   :ensure t
   :config
   (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
+        doom-themes-enable-italic t)
   (load-theme 'doom-nord t))
 
 (doom-themes-visual-bell-config)
@@ -44,7 +44,7 @@
 
 ;; Put backup files (ie foo~) in ~/.emacs.d/.
 (custom-set-variables
-  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+ '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/backups/" t)
@@ -77,18 +77,23 @@
 
 (global-set-key (kbd "C-x O") 'other-frame)
 
+(global-set-key (kbd "C-M-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "C-M-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "C-M-<down>") 'shrink-window)
+(global-set-key (kbd "C-M-<up>") 'enlarge-window)
+
 (use-package counsel)
 
 (use-package ivy
-    :config
-    (ivy-mode 1)
-    (counsel-mode 1)
-    (setopt ivy-use-virtual-buffers t)
-    (setopt ivy-count-format "(%d/%d) "))
+  :config
+  (ivy-mode 1)
+  (counsel-mode 1)
+  (setopt ivy-use-virtual-buffers t)
+  (setopt ivy-count-format "(%d/%d) "))
 
-  (use-package swiper
-    :bind
-    (("M-C-s" . swiper)))
+(use-package swiper
+  :bind
+  (("M-C-s" . swiper)))
 
 (use-package treemacs
   :defer t
@@ -97,7 +102,7 @@
     (treemacs-follow-mode t))
   :bind
   (:map global-map
-	("C-x t t" . treemacs)))
+        ("C-x t t" . treemacs)))
 
 (use-package treemacs-nerd-icons
   :after (treemacs)
@@ -120,13 +125,36 @@
   :defer t
   :bind
   (:map global-map
-	("C-x u" . vundo)))
+        ("C-x u" . vundo)))
 
 (use-package company)
 (add-hook 'after-init-hook 'global-company-mode)
-(setq company-tooltip-idle-delay 0.2)
+(setq company-tooltip-idle-delay 0.1)
+(setq compandy-idle-delay  0.1)
+(setq company-minimum-prefix-length 1)
 
-(add-hook 'python-mode-hook 'eglot-ensure)
+(add-hook 'python-ts-mode-hook 'eglot-ensure)
+(add-hook 'c-ts-mode-hook 'eglot-ensure)
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+(electric-indent-mode 1)
+
+(defun untabify-buffer ()
+  (interactive)
+  (untabify (point-min) (point-max)))
+
+(add-hook 'before-save-hook 'untabify-buffer)
+(add-hook 'prog-mode-hook (lambda ()
+                            (setq indent-tabs-mode nil)))
+
+(setq c-ts-mode-indent-style 'linux)
+(setq c-ts-mode-indent-offset 4)
+
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)
+        (c-mode . c-ts-mode)))
 
 (use-package projectile
   :defer t)
