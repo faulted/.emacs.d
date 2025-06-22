@@ -169,14 +169,29 @@
 
 (global-set-key (kbd "M-o") 'ace-window)
 
-(use-package counsel)
+(use-package counsel
+  :config
+  (keymap-global-set "C-h v" #'counsel-describe-variable)
+  (keymap-global-set "C-h f" #'counsel-describe-function)
+  (keymap-global-set "C-h o" #'counsel-describe-symbol)
+  (keymap-global-set "C-x C-f" #'counsel-find-file)
+  (keymap-global-set "M-x" #'counsel-M-x)
+  (keymap-global-set "C-c r" #'counsel-rg)
+  (keymap-global-set "C-c l" #'counsel-locate)
+  (keymap-global-set "C-x b" #'counsel-switch-buffer))
 
 (use-package ivy
   :config
   (ivy-mode 1)
   (counsel-mode 1)
+  (setq ivy-height 15)
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
+
+;; Remove the leading regex "^" from the counsel search for M-x
+(ivy-configure 'counsel-M-x
+  :initial-input ""
+  :display-transformer-fn #'counsel-M-x-transformer)
 
 (use-package ivy-rich
   :after ivy
@@ -185,8 +200,9 @@
   (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package swiper
-  :bind
-  (("M-C-s" . swiper)))
+  :config
+  (keymap-global-set "C-M-s" #'swiper)
+  (keymap-global-set "C-s" #'swiper-isearch))
 
 (use-package treemacs
   :defer t
