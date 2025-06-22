@@ -151,6 +151,9 @@
          ("C-c n c" . org-roam-capture)
          ;; Dailies
          ("C-c n j" . org-roam-dailies-capture-today)
+         :map org-capture-mode-map
+         ("C-c C-c" . nil)
+         ("C-c C-'" . org-capture-finalize)
          :map org-mode-map
          ("C-M-i"   . completion-at-point))
   :config
