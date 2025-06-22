@@ -131,26 +131,28 @@
 (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
-(let ((org-roam-dir "~/Documents/org-files/org-roam/"))
+(let ((org-roam-dir "~/Documents/org-roam/"))
   (unless (file-exists-p org-roam-dir)
     (make-directory org-roam-dir t)))
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
-(let ((org-roam-daily-dir "~/Documents/org-files/org-roam/daily/"))
+(let ((org-roam-daily-dir "~/Documents/org-roam/daily/"))
   (unless (file-exists-p org-roam-daily-dir)
     (make-directory org-roam-daily-dir t)))
 
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "~/Documents/org-files/org-roam"))
+  (org-roam-directory (file-truename "~/Documents/org-roam"))
+  (org-roam-completion-everywhere t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
          ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today))
+         ("C-c n j" . org-roam-dailies-capture-today)
+         :map org-mode-map
+         ("C-M-i"   . completion-at-point))
   :config
   ;; If you're using a vertical completion framework, you might want a more informative completion interface
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
@@ -175,6 +177,12 @@
   (counsel-mode 1)
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
+
+(use-package ivy-rich
+  :after ivy
+  :config
+  (ivy-rich-mode 1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
 (use-package swiper
   :bind
