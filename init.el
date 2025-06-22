@@ -61,6 +61,24 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
+;; (let ((password-store-dir "~/Documents/org-files/"))
+;;   (unless (file-exists-p password-store-dir)
+;;     (make-directory password-store-dir t)))
+
+(use-package password-store
+  :disabled)
+
+(use-package password-store-otp
+  :disabled)
+
+(use-package pass
+  :disabled)
+
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-dir "~/Documents/org-files/"))
+  (unless (file-exists-p org-dir)
+    (make-directory org-dir t)))
+
 (defun my/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
@@ -112,23 +130,33 @@
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
 
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-roam-dir "~/Documents/org-files/org-roam/"))
+  (unless (file-exists-p org-roam-dir)
+    (make-directory org-roam-dir t)))
+
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-roam-daily-dir "~/Documents/org-files/org-roam/daily/"))
+  (unless (file-exists-p org-roam-daily-dir)
+    (make-directory org-roam-daily-dir t)))
+
 (use-package org-roam
-:ensure t
-:custom
-(org-roam-directory (file-truename "/path/to/org-files/"))
-:bind (("C-c n l" . org-roam-buffer-toggle)
-       ("C-c n f" . org-roam-node-find)
-       ("C-c n g" . org-roam-graph)
-       ("C-c n i" . org-roam-node-insert)
-       ("C-c n c" . org-roam-capture)
-       ;; Dailies
-       ("C-c n j" . org-roam-dailies-capture-today))
-:config
-;; If you're using a vertical completion framework, you might want a more informative completion interface
-(setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-(org-roam-db-autosync-mode)
-;; If using org-roam-protocol
-(require 'org-roam-protocol))
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Documents/org-files/org-roam"))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 
 (global-set-key (kbd "C-x O") 'other-frame)
 
@@ -220,3 +248,9 @@
 
 (use-package vterm
   :ensure t)
+
+(use-package avy
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-:" . 'avy-goto-char)))
