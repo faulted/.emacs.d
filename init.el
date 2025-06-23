@@ -188,6 +188,7 @@
   (ivy-mode 1)
   (counsel-mode 1)
   (setq ivy-height 15)
+  (setq ivy-re-builders-alist '((counsel-rg . ivy--regex-plus)))
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
 
