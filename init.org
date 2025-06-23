@@ -111,57 +111,58 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 org-mode related packages and settings
 ** org-mode setup
 #+begin_src emacs-lisp
-  ;; Create ~/Documents/org-files/ directory if it doesn't exist
-  (let ((org-dir "~/Documents/org-files/"))
-    (unless (file-exists-p org-dir)
-      (make-directory org-dir t)))
+    ;; Create ~/Documents/org-files/ directory if it doesn't exist
+    (let ((org-dir "~/Documents/org-files/"))
+      (unless (file-exists-p org-dir)
+        (make-directory org-dir t)))
 
-  (defun my/org-mode-setup ()
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (auto-fill-mode 1)
-    (display-line-numbers-mode -1))
+    (defun my/org-mode-setup ()
+      (org-indent-mode)
+      (variable-pitch-mode 1)
+      (auto-fill-mode 1)
+      (display-line-numbers-mode -1)
+      (setq fill-column 120))
 
-  (use-package org
-    :hook (org-mode . my/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾"
-          org-hide-emphasis-markers t))
+    (use-package org
+      :hook (org-mode . my/org-mode-setup)
+      :config
+      (setq org-ellipsis " ▾"
+            org-hide-emphasis-markers t))
 
-  (use-package org-superstar
-    :hook (org-mode))
+    (use-package org-superstar
+      :hook (org-mode))
 
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (with-eval-after-load 'org
-    (dolist (face '((org-level-1 . 1.2)
-                    (org-level-2 . 1.1)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+    (with-eval-after-load 'org
+      (dolist (face '((org-level-1 . 1.2)
+                      (org-level-2 . 1.1)
+                      (org-level-3 . 1.05)
+                      (org-level-4 . 1.0)
+                      (org-level-5 . 1.1)
+                      (org-level-6 . 1.1)
+                      (org-level-7 . 1.1)
+                      (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
 
 
-  ;; Make sure org-indent face is available
-  (require 'org-indent)
+    ;; Make sure org-indent face is available
+    (require 'org-indent)
 
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-  (defface ivy-org
-    '((t :inherit default))
-    "Face used by Ivy for highlighting Org buffers in the alternatives.")
+    (defface ivy-org
+      '((t :inherit default))
+      "Face used by Ivy for highlighting Org buffers in the alternatives.")
 #+end_src
 ** org-mode auto-tangle
 #+begin_src emacs-lisp
@@ -176,7 +177,6 @@ org-mode related packages and settings
   (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
 #+end_src
 ** org-roam
-*** TODO Configure org-roam
 I need to set up keybindings to make using org-roam more intuitive
 #+begin_src emacs-lisp
   ;; Create ~/Documents/org-files/ directory if it doesn't exist
@@ -265,7 +265,6 @@ I need to set up keybindings to make using org-roam more intuitive
     :config
     (keymap-global-set "C-M-s" #'swiper)
     (keymap-global-set "C-s" #'swiper-isearch))
-
 #+end_src
 * Treemacs
 #+begin_src emacs-lisp

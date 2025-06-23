@@ -83,7 +83,8 @@
   (org-indent-mode)
   (variable-pitch-mode 1)
   (auto-fill-mode 1)
-  (display-line-numbers-mode -1))
+  (display-line-numbers-mode -1)
+  (setq fill-column 120))
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
