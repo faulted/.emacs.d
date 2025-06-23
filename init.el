@@ -167,6 +167,10 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
+(add-hook 'org-mode-hook
+          (lambda ()
+            (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
+
 (global-set-key (kbd "C-x O") 'other-frame)
 
 (global-set-key (kbd "C-M-<left>") 'shrink-window-horizontally)
