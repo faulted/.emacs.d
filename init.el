@@ -51,20 +51,6 @@
 
 (global-display-line-numbers-mode t)
 
-(use-package org-superstar
-  :hook (org-mode))
-
-(use-package org-auto-tangle
-  :defer t
-  :hook (org-mode . org-auto-tangle-mode))
-
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
-
-(use-package org-roam
-  :defer t)
-
 (defun reload-init-file ()
   "Reload the user init file"
   (interactive)
@@ -75,6 +61,108 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
+;; (let ((password-store-dir "~/Documents/org-files/"))
+;;   (unless (file-exists-p password-store-dir)
+;;     (make-directory password-store-dir t)))
+
+(use-package password-store
+  :disabled)
+
+(use-package password-store-otp
+  :disabled)
+
+(use-package pass
+  :disabled)
+
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-dir "~/Documents/org-files/"))
+  (unless (file-exists-p org-dir)
+    (make-directory org-dir t)))
+
+(defun my/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 1)
+  (display-line-numbers-mode -1))
+
+(use-package org
+  :hook (org-mode . my/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t))
+
+(use-package org-superstar
+  :hook (org-mode))
+
+;; Replace list hyphen with dot
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(with-eval-after-load 'org
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+
+
+;; Make sure org-indent face is available
+(require 'org-indent)
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
+
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-roam-dir "~/Documents/org-roam/"))
+  (unless (file-exists-p org-roam-dir)
+    (make-directory org-roam-dir t)))
+
+;; Create ~/Documents/org-files/ directory if it doesn't exist
+(let ((org-roam-daily-dir "~/Documents/org-roam/daily/"))
+  (unless (file-exists-p org-roam-daily-dir)
+    (make-directory org-roam-daily-dir t)))
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Documents/org-roam"))
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n c" . org-roam-capture)
+         ;; Dailies
+         ("C-c n j" . org-roam-dailies-capture-today)
+         :map org-capture-mode-map
+         ("C-c C-c" . nil)
+         ("C-c C-'" . org-capture-finalize)
+         :map org-mode-map
+         ("C-M-i"   . completion-at-point))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
 (global-set-key (kbd "C-x O") 'other-frame)
 
 (global-set-key (kbd "C-M-<left>") 'shrink-window-horizontally)
@@ -82,18 +170,43 @@
 (global-set-key (kbd "C-M-<down>") 'shrink-window)
 (global-set-key (kbd "C-M-<up>") 'enlarge-window)
 
-(use-package counsel)
+(global-set-key (kbd "M-o") 'ace-window)
+
+(use-package counsel
+  :config
+  (keymap-global-set "C-h v" #'counsel-describe-variable)
+  (keymap-global-set "C-h f" #'counsel-describe-function)
+  (keymap-global-set "C-h o" #'counsel-describe-symbol)
+  (keymap-global-set "C-x C-f" #'counsel-find-file)
+  (keymap-global-set "M-x" #'counsel-M-x)
+  (keymap-global-set "C-c r" #'counsel-rg)
+  (keymap-global-set "C-c l" #'counsel-locate)
+  (keymap-global-set "C-x b" #'counsel-switch-buffer))
 
 (use-package ivy
   :config
   (ivy-mode 1)
   (counsel-mode 1)
+  (setq ivy-height 15)
+  (setq ivy-re-builders-alist '((counsel-rg . ivy--regex-plus)))
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
 
+;; Remove the leading regex "^" from the counsel search for M-x
+(ivy-configure 'counsel-M-x
+  :initial-input ""
+  :display-transformer-fn #'counsel-M-x-transformer)
+
+(use-package ivy-rich
+  :after ivy
+  :config
+  (ivy-rich-mode 1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+
 (use-package swiper
-  :bind
-  (("M-C-s" . swiper)))
+  :config
+  (keymap-global-set "C-M-s" #'swiper)
+  (keymap-global-set "C-s" #'swiper-isearch))
 
 (use-package treemacs
   :defer t
@@ -156,3 +269,9 @@
 
 (use-package vterm
   :ensure t)
+
+(use-package avy
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-:" . 'avy-goto-char)))

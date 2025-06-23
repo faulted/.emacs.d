@@ -75,28 +75,6 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode t)
 #+end_src
-** Prettify org-mode bullets
-#+begin_src emacs-lisp
-  (use-package org-superstar
-    :hook (org-mode))
-#+end_src
-** org-mode auto-tangle
-#+begin_src emacs-lisp
-  (use-package org-auto-tangle
-    :defer t
-    :hook (org-mode . org-auto-tangle-mode))
-#+end_src
-** org-mode structure templates
-#+begin_src emacs-lisp
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
-#+end_src
-** org-roam
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :defer t)
-#+end_src
 ** Create function to allow for a quick reload of init.el
 #+begin_src emacs-lisp
   (defun reload-init-file ()
@@ -111,6 +89,125 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 #+end_src
+* Password Manager
+** Password Store
+#+begin_src emacs-lisp
+  ;; (let ((password-store-dir "~/Documents/org-files/"))
+  ;;   (unless (file-exists-p password-store-dir)
+  ;;     (make-directory password-store-dir t)))
+
+  (use-package password-store
+    :disabled)
+
+  (use-package password-store-otp
+    :disabled)
+#+end_src
+** Pass
+#+begin_src emacs-lisp
+  (use-package pass
+    :disabled)
+#+end_src
+* Org-Mode
+org-mode related packages and settings
+** org-mode setup
+#+begin_src emacs-lisp
+  ;; Create ~/Documents/org-files/ directory if it doesn't exist
+  (let ((org-dir "~/Documents/org-files/"))
+    (unless (file-exists-p org-dir)
+      (make-directory org-dir t)))
+  
+  (defun my/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 1)
+    (display-line-numbers-mode -1))
+
+  (use-package org
+    :hook (org-mode . my/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t))
+
+  (use-package org-superstar
+    :hook (org-mode))
+
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (with-eval-after-load 'org
+    (dolist (face '((org-level-1 . 1.2)
+                    (org-level-2 . 1.1)
+                    (org-level-3 . 1.05)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+
+
+  ;; Make sure org-indent face is available
+  (require 'org-indent)
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+#+end_src
+** org-mode auto-tangle
+#+begin_src emacs-lisp
+  (use-package org-auto-tangle
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode))
+#+end_src
+** org-mode structure templates
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
+#+end_src
+** org-roam
+*** TODO Configure org-roam
+I need to set up keybindings to make using org-roam more intuitive
+#+begin_src emacs-lisp
+  ;; Create ~/Documents/org-files/ directory if it doesn't exist
+  (let ((org-roam-dir "~/Documents/org-roam/"))
+    (unless (file-exists-p org-roam-dir)
+      (make-directory org-roam-dir t)))
+
+  ;; Create ~/Documents/org-files/ directory if it doesn't exist
+  (let ((org-roam-daily-dir "~/Documents/org-roam/daily/"))
+    (unless (file-exists-p org-roam-daily-dir)
+      (make-directory org-roam-daily-dir t)))
+
+  (use-package org-roam
+    :ensure t
+    :custom
+    (org-roam-directory (file-truename "~/Documents/org-roam"))
+    (org-roam-completion-everywhere t)
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n c" . org-roam-capture)
+           ;; Dailies
+           ("C-c n j" . org-roam-dailies-capture-today)
+           :map org-capture-mode-map
+           ("C-c C-c" . nil)
+           ("C-c C-'" . org-capture-finalize)
+           :map org-mode-map
+           ("C-M-i"   . completion-at-point))
+    :config
+    ;; If you're using a vertical completion framework, you might want a more informative completion interface
+    (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+    (org-roam-db-autosync-mode)
+    ;; If using org-roam-protocol
+    (require 'org-roam-protocol))
+#+end_src
 * Keybindings
 #+begin_src emacs-lisp
   (global-set-key (kbd "C-x O") 'other-frame)
@@ -119,23 +216,49 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (global-set-key (kbd "C-M-<right>") 'enlarge-window-horizontally)
   (global-set-key (kbd "C-M-<down>") 'shrink-window)
   (global-set-key (kbd "C-M-<up>") 'enlarge-window)
+
+  (global-set-key (kbd "M-o") 'ace-window)
 #+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
-  (use-package counsel)
+  (use-package counsel
+    :config
+    (keymap-global-set "C-h v" #'counsel-describe-variable)
+    (keymap-global-set "C-h f" #'counsel-describe-function)
+    (keymap-global-set "C-h o" #'counsel-describe-symbol)
+    (keymap-global-set "C-x C-f" #'counsel-find-file)
+    (keymap-global-set "M-x" #'counsel-M-x)
+    (keymap-global-set "C-c r" #'counsel-rg)
+    (keymap-global-set "C-c l" #'counsel-locate)
+    (keymap-global-set "C-x b" #'counsel-switch-buffer))
 
   (use-package ivy
     :config
     (ivy-mode 1)
     (counsel-mode 1)
+    (setq ivy-height 15)
+    (setq ivy-re-builders-alist '((counsel-rg . ivy--regex-plus)))
     (setopt ivy-use-virtual-buffers t)
     (setopt ivy-count-format "(%d/%d) "))
 
+  ;; Remove the leading regex "^" from the counsel search for M-x
+  (ivy-configure 'counsel-M-x
+    :initial-input ""
+    :display-transformer-fn #'counsel-M-x-transformer)
+
+  (use-package ivy-rich
+    :after ivy
+    :config
+    (ivy-rich-mode 1)
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+
   (use-package swiper
-    :bind
-    (("M-C-s" . swiper)))
+    :config
+    (keymap-global-set "C-M-s" #'swiper)
+    (keymap-global-set "C-s" #'swiper-isearch))
+
 #+end_src
-** Treemacs
+* Treemacs
 #+begin_src emacs-lisp
   (use-package treemacs
     :defer t
@@ -214,4 +337,12 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
 #+begin_src emacs-lisp
   (use-package vterm
     :ensure t)
+#+end_src
+** Avy
+#+begin_src emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind
+    (:map global-map
+          ("C-:" . 'avy-goto-char)))
 #+end_src
