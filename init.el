@@ -122,6 +122,10 @@
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
+(defface ivy-org
+  '((t :inherit default))
+  "Face used by Ivy for highlighting Org buffers in the alternatives.")
+
 (use-package org-auto-tangle
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
@@ -188,7 +192,6 @@
   (ivy-mode 1)
   (counsel-mode 1)
   (setq ivy-height 15)
-  (setq ivy-re-builders-alist '((counsel-rg . ivy--regex-plus)))
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
 
