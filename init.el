@@ -69,6 +69,14 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
+(use-package diredfl
+  :defer t
+  :hook (dired-mode . diredfl-mode))
+
+(use-package nerd-icons-dired
+  :defer t
+  :hook (dired-mode . nerd-icons-dired-mode))
+
 ;; Disable backup and auto-save for TRAMP files
 (defun my-disable-tramp-backups ()
   "Disable backups and auto-saves for TRAMP files."
@@ -322,3 +330,19 @@
   :bind
   (:map global-map
         ("C-:" . 'avy-goto-char)))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(company counsel diredfl doom-modeline doom-themes ivy-rich magit
+             nerd-icons-dired org-auto-tangle org-roam org-superstar
+             pass pdf-tools projectile pyvenv rainbow-delimiters
+             treemacs-nerd-icons vterm vundo)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

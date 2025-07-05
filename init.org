@@ -97,6 +97,16 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 #+end_src
+** Dired improvements
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :defer t
+    :hook (dired-mode . diredfl-mode))
+
+  (use-package nerd-icons-dired
+    :defer t
+    :hook (dired-mode . nerd-icons-dired-mode))
+#+end_src
 * TRAMP
 #+begin_src emacs-lisp
   ;; Disable backup and auto-save for TRAMP files
