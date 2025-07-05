@@ -64,20 +64,28 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 #+end_src
 ** Organize backup files
 #+begin_src emacs-lisp
-  ;; Put backup files (ie foo~) in ~/.emacs.d/.
-  (custom-set-variables
-   '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
-
   ;; create the autosave dir if necessary, since emacs won't.
   (make-directory "~/.emacs.d/backups/" t)
+
+  ;; Put backup files (ie foo~) in ~/.emacs.d/.
+  (setq backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
+
+  ;; Use copying to preserve symlinks
+  (setq backup-by-copying t)
+
+  ;; Keep multiple versions
+  (setq version-control t)
+  (setq delete-old-versions t)
+  (setq kept-new-versions 6)
+  (setq kept-old-versions 2)
 #+end_src
-** Globally enable line numbers
+** prog-mode enable line numbers
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode t)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+end_src
 ** Create function to allow for a quick reload of init.el
 #+begin_src emacs-lisp
-  (defun reload-init-file ()
+  (defun my/reload-init-file ()
     "Reload the user init file"
     (interactive)
     (load-file user-init-file))
@@ -88,6 +96,34 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
     :defer t)
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+#+end_src
+* TRAMP
+#+begin_src emacs-lisp
+  ;; Disable backup and auto-save for TRAMP files
+  (defun my-disable-tramp-backups ()
+    "Disable backups and auto-saves for TRAMP files."
+    (when (and buffer-file-name (file-remote-p buffer-file-name))
+      (setq-local make-backup-files nil)
+      (setq-local auto-save-default nil)
+      (setq-local create-lockfiles nil)))
+
+  (add-hook 'find-file-hook #'my-disable-tramp-backups)
+#+end_src
+* Verify files with detached signatures
+#+begin_src emacs-lisp
+  (defun my/gpg-verify-detached (sig data)
+    "Verify GPG detached signature SIG for DATA."
+    (interactive
+     (list (read-file-name "Signature file (.sig): ")
+           (read-file-name "Data file: ")))
+    (let ((buf (get-buffer-create "*GPG Verify*")))
+      (with-current-buffer buf
+        (erase-buffer)
+        (let ((code (call-process "gpg" nil buf t "--verify" sig data)))
+          (if (= code 0)
+              (message "Signature is valid.")
+            (message "Signature verification failed.")))
+        (display-buffer buf))))
 #+end_src
 * Password Manager
 ** Password Store
@@ -292,9 +328,9 @@ I need to set up keybindings to make using org-roam more intuitive
   (use-package pdf-tools)
   (pdf-loader-install)
 
-  (defun my-pdf-mode-hook ()
+  (defun my/pdf-mode-hook ()
     (display-line-numbers-mode -1))
-  (add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
+  (add-hook 'pdf-view-mode-hook 'my/pdf-mode-hook)
 #+end_src
 * Development
 ** Magit
@@ -331,7 +367,7 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
 
   (electric-indent-mode 1)
 
-  (defun untabify-buffer ()
+  (defun my/untabify-buffer ()
     (interactive)
     (untabify (point-min) (point-max)))
 

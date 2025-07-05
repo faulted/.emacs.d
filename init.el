@@ -42,16 +42,24 @@
 ;; Automatically revert the buffer to keep the Git branch in the modeline up to date.
 (setq auto-revert-check-vc-info t)
 
-;; Put backup files (ie foo~) in ~/.emacs.d/.
-(custom-set-variables
- '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
-
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/backups/" t)
 
-(global-display-line-numbers-mode t)
+;; Put backup files (ie foo~) in ~/.emacs.d/.
+(setq backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
 
-(defun reload-init-file ()
+;; Use copying to preserve symlinks
+(setq backup-by-copying t)
+
+;; Keep multiple versions
+(setq version-control t)
+(setq delete-old-versions t)
+(setq kept-new-versions 6)
+(setq kept-old-versions 2)
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+(defun my/reload-init-file ()
   "Reload the user init file"
   (interactive)
   (load-file user-init-file))
@@ -60,6 +68,30 @@
   :defer t)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+
+;; Disable backup and auto-save for TRAMP files
+(defun my-disable-tramp-backups ()
+  "Disable backups and auto-saves for TRAMP files."
+  (when (and buffer-file-name (file-remote-p buffer-file-name))
+    (setq-local make-backup-files nil)
+    (setq-local auto-save-default nil)
+    (setq-local create-lockfiles nil)))
+
+(add-hook 'find-file-hook #'my-disable-tramp-backups)
+
+(defun my/gpg-verify-detached (sig data)
+  "Verify GPG detached signature SIG for DATA."
+  (interactive
+   (list (read-file-name "Signature file (.sig): ")
+         (read-file-name "Data file: ")))
+  (let ((buf (get-buffer-create "*GPG Verify*")))
+    (with-current-buffer buf
+      (erase-buffer)
+      (let ((code (call-process "gpg" nil buf t "--verify" sig data)))
+        (if (= code 0)
+            (message "Signature is valid.")
+          (message "Signature verification failed.")))
+      (display-buffer buf))))
 
 ;; (let ((password-store-dir "~/Documents/org-files/"))
 ;;   (unless (file-exists-p password-store-dir)
@@ -235,9 +267,9 @@
 (use-package pdf-tools)
 (pdf-loader-install)
 
-(defun my-pdf-mode-hook ()
+(defun my/pdf-mode-hook ()
   (display-line-numbers-mode -1))
-(add-hook 'pdf-view-mode-hook 'my-pdf-mode-hook)
+(add-hook 'pdf-view-mode-hook 'my/pdf-mode-hook)
 
 (use-package magit
   :defer t)
@@ -262,7 +294,7 @@
 
 (electric-indent-mode 1)
 
-(defun untabify-buffer ()
+(defun my/untabify-buffer ()
   (interactive)
   (untabify (point-min) (point-max)))
 
