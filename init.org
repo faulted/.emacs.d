@@ -97,6 +97,28 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 #+end_src
+** Smart Parens
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :ensure smartparens
+    :hook (prog-mode text-mode markdown-mode org-mode)
+    :config
+    (require 'smartparens-config))
+#+end_src
+** Show file path in title frame
+#+begin_src emacs-lisp
+  (setq frame-title-format
+        (list (format "%s %%S: %%j " (system-name))
+              '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+#+end_src
+** Copy file path to kill ring
+#+begin_src emacs-lisp
+  (defun my/copy-full-path-to-kill-ring ()
+    "Copy the current buffer's full path to the kill ring"
+    (interactive)
+    (when buffer-file-name
+      (kill-new (file-truename buffer-file-name))))
+#+end_src
 ** Dired improvements
 #+begin_src emacs-lisp
   (use-package diredfl
@@ -106,6 +128,18 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (use-package nerd-icons-dired
     :defer t
     :hook (dired-mode . nerd-icons-dired-mode))
+#+end_src
+** Markdown mode
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :defer t)
+#+end_src
+** Dired use only one directory by default
+#+begin_src emacs-lisp
+  (put 'dired-find-alternate-file 'disabled nil)
+  (eval-after-load "dired" '(progn
+  			    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+  			    (define-key dired-mode-map (kbd "a") 'dired-find-file)))
 #+end_src
 * TRAMP
 #+begin_src emacs-lisp
@@ -157,58 +191,58 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 org-mode related packages and settings
 ** org-mode setup
 #+begin_src emacs-lisp
-    ;; Create ~/Documents/org-files/ directory if it doesn't exist
-    (let ((org-dir "~/Documents/org-files/"))
-      (unless (file-exists-p org-dir)
-        (make-directory org-dir t)))
+  ;; Create ~/Documents/org-files/ directory if it doesn't exist
+  (let ((org-dir "~/Documents/org-files/"))
+    (unless (file-exists-p org-dir)
+      (make-directory org-dir t)))
 
-    (defun my/org-mode-setup ()
-      (org-indent-mode)
-      (variable-pitch-mode 1)
-      (auto-fill-mode 1)
-      (display-line-numbers-mode -1)
-      (setq fill-column 120))
+  (defun my/org-mode-setup ()
+    (org-indent-mode)
+    ;; (variable-pitch-mode 1)
+    (auto-fill-mode 1)
+    (display-line-numbers-mode -1)
+    (setq fill-column 120))
 
-    (use-package org
-      :hook (org-mode . my/org-mode-setup)
-      :config
-      (setq org-ellipsis " ▾"
-            org-hide-emphasis-markers t))
+  (use-package org
+    :hook (org-mode . my/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾"
+          org-hide-emphasis-markers t))
 
-    (use-package org-superstar
-      :hook (org-mode))
+  (use-package org-superstar
+    :hook (org-mode))
 
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-    (with-eval-after-load 'org
-      (dolist (face '((org-level-1 . 1.2)
-                      (org-level-2 . 1.1)
-                      (org-level-3 . 1.05)
-                      (org-level-4 . 1.0)
-                      (org-level-5 . 1.1)
-                      (org-level-6 . 1.1)
-                      (org-level-7 . 1.1)
-                      (org-level-8 . 1.1)))
-        (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  ;; (with-eval-after-load 'org
+  ;;   (dolist (face '((org-level-1 . 1.2)
+  ;;                   (org-level-2 . 1.1)
+  ;;                   (org-level-3 . 1.05)
+  ;;                   (org-level-4 . 1.0)
+  ;;                   (org-level-5 . 1.1)
+  ;;                   (org-level-6 . 1.1)
+  ;;                   (org-level-7 . 1.1)
+  ;;                   (org-level-8 . 1.1)))
+  ;;     (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
 
 
-    ;; Make sure org-indent face is available
-    (require 'org-indent)
+  ;; Make sure org-indent face is available
+  (require 'org-indent)
 
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  ;; (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  ;; (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  ;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  ;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  ;; (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
-    (defface ivy-org
-      '((t :inherit default))
-      "Face used by Ivy for highlighting Org buffers in the alternatives.")
+  (defface ivy-org
+    '((t :inherit default))
+    "Face used by Ivy for highlighting Org buffers in the alternatives.")
 #+end_src
 ** org-mode auto-tangle
 #+begin_src emacs-lisp
@@ -257,12 +291,31 @@ I need to set up keybindings to make using org-roam more intuitive
     (org-roam-db-autosync-mode)
     ;; If using org-roam-protocol
     (require 'org-roam-protocol))
+
+  (setq org-roam-directory (file-truename "~/Documents/org-roam"))
+
+  (defun org-roam-rg ()
+    "Ripgrep search the org-roam directory"
+    (interactive)
+    (unless (boundp 'org-roam-directory)
+      (error "org-roam-directory is not set"))
+    (let ((default-directory org-roam-directory))
+      (counsel-rg nil org-roam-directory "-i" "Search org-roam (case insensitive): ")))
+
+  (global-set-key (kbd "C-c n r") #'org-roam-rg)
 #+end_src
 ** org-mode font-lock
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook
             (lambda ()
               (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
+#+end_src
+** org-agenda
+#+begin_src emacs-lisp
+  (make-directory "~/Documents/org-agenda/" t)
+  (setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))
+
+  (global-set-key (kbd "C-c n a") 'org-agenda)
 #+end_src
 * Keybindings
 #+begin_src emacs-lisp
@@ -274,6 +327,9 @@ I need to set up keybindings to make using org-roam more intuitive
   (global-set-key (kbd "C-M-<up>") 'enlarge-window)
 
   (global-set-key (kbd "M-o") 'ace-window)
+  (global-set-key (kbd "M-O") 'ace-swap-window)
+
+  (global-set-key (kbd "C-c v n") 'multi-vterm)
 #+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
@@ -296,6 +352,8 @@ I need to set up keybindings to make using org-roam more intuitive
     (setopt ivy-use-virtual-buffers t)
     (setopt ivy-count-format "(%d/%d) "))
 
+  (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
+  
   ;; Remove the leading regex "^" from the counsel search for M-x
   (ivy-configure 'counsel-M-x
     :initial-input ""
@@ -321,7 +379,7 @@ I need to set up keybindings to make using org-roam more intuitive
       (treemacs-follow-mode t))
     :bind
     (:map global-map
-          ("C-x t t" . treemacs)))
+          ("C-c t t" . treemacs)))
 
   (use-package treemacs-nerd-icons
     :after (treemacs)
@@ -390,18 +448,99 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
 
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode)
-          (c-mode . c-ts-mode)))
+          (c-mode . c-ts-mode)
+          (gdscript-mode . gdscript-ts-mode)))
+
+  (use-package reformatter
+    :ensure t)
+
+  (reformatter-define gdformat-format
+    :program "gdformat"
+    :args '("-"))
+
+  (add-hook 'gdscript-ts-mode #'gdformat-format-on-save-mode)
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp
   (use-package projectile
-    :defer t)
+    :defer t
+    :config
+    (projectile-load-known-projects))
+  
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+end_src
+** Counsel projectile
+#+begin_src emacs-lisp
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (setq counsel-projectile-preview-buffers t))
+
+  (counsel-projectile-mode +1)
+
+  (setq counsel-projectile-switch-project-action
+        '(13
+          ("o" counsel-projectile-switch-project-action
+           "jump to a project buffer or file")
+          ("f" counsel-projectile-switch-project-action-find-file
+           "jump to a project file")
+          ("d" counsel-projectile-switch-project-action-find-dir
+           "jump to a project directory")
+          ("D" counsel-projectile-switch-project-action-dired
+           "open project in dired")
+          ("b" counsel-projectile-switch-project-action-switch-to-buffer
+           "jump to a project buffer")
+          ("m" counsel-projectile-switch-project-action-find-file-manually
+           "find file manually from project root")
+          ("S" counsel-projectile-switch-project-action-save-all-buffers
+           "save all project buffers")
+          ("k" counsel-projectile-switch-project-action-kill-buffers
+           "kill all project buffers")
+          ("K" counsel-projectile-switch-project-action-remove-known-project
+           "remove project from known projects")
+          ("c" counsel-projectile-switch-project-action-compile
+           "run project compilation command")
+          ("C" counsel-projectile-switch-project-action-configure
+           "run project configure command")
+          ("E" counsel-projectile-switch-project-action-edit-dir-locals
+           "edit project dir-locals")
+          ("v" counsel-projectile-switch-project-action-vc
+           "open project in vc-dir / magit / monky")
+          ("sg" counsel-projectile-switch-project-action-grep
+           "search project with grep")
+          ("si" counsel-projectile-switch-project-action-git-grep
+           "search project with git grep")
+          ("ss" counsel-projectile-switch-project-action-ag
+           "search project with ag")
+          ("sr" counsel-projectile-switch-project-action-rg
+           "search project with rg")
+          ("xs" counsel-projectile-switch-project-action-run-shell
+           "invoke shell from project root")
+          ("xe" counsel-projectile-switch-project-action-run-eshell
+           "invoke eshell from project root")
+          ("xt" counsel-projectile-switch-project-action-run-term
+           "invoke term from project root")
+          ("xv" counsel-projectile-switch-project-action-run-vterm
+           "invoke vterm from project root")
+          ("Oc" counsel-projectile-switch-project-action-org-capture
+           "capture into project")
+          ("Oa" counsel-projectile-switch-project-action-org-agenda
+           "open project agenda")))
 #+end_src
 ** Vterm
 #+begin_src emacs-lisp
   (use-package vterm
+    :ensure t)
+#+end_src
+** Ripgrep
+#+begin_src emacs-lisp
+  (use-package ripgrep
+    :ensure t)
+#+end_src
+** multi-vterm
+#+begin_src emacs-lisp
+  (use-package multi-vterm
     :ensure t)
 #+end_src
 ** Avy
@@ -411,4 +550,20 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
     :bind
     (:map global-map
           ("C-:" . 'avy-goto-char)))
+#+end_src
+* Godot
+#+begin_src emacs-lisp
+  (use-package gdscript-mode
+    :defer t
+    :hook (gdscript-ts-mode . eglot-ensure)
+    :custom (gdscript-eglot-version 4))
+
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '(gdscript-ts-mode "localhost" 6005)))
+#+end_src
+* crontab mode
+#+begin_src emacs-lisp
+  (use-package crontab-mode
+    :defer t)
 #+end_src

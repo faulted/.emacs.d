@@ -69,6 +69,22 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
 
+(use-package smartparens
+  :ensure smartparens
+  :hook (prog-mode text-mode markdown-mode org-mode)
+  :config
+  (require 'smartparens-config))
+
+(setq frame-title-format
+      (list (format "%s %%S: %%j " (system-name))
+            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+
+(defun my/copy-full-path-to-kill-ring ()
+  "Copy the current buffer's full path to the kill ring"
+  (interactive)
+  (when buffer-file-name
+    (kill-new (file-truename buffer-file-name))))
+
 (use-package diredfl
   :defer t
   :hook (dired-mode . diredfl-mode))
@@ -76,6 +92,14 @@
 (use-package nerd-icons-dired
   :defer t
   :hook (dired-mode . nerd-icons-dired-mode))
+
+(use-package markdown-mode
+  :defer t)
+
+(put 'dired-find-alternate-file 'disabled nil)
+(eval-after-load "dired" '(progn
+			    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+			    (define-key dired-mode-map (kbd "a") 'dired-find-file)))
 
 ;; Disable backup and auto-save for TRAMP files
 (defun my-disable-tramp-backups ()
@@ -121,7 +145,7 @@
 
 (defun my/org-mode-setup ()
   (org-indent-mode)
-  (variable-pitch-mode 1)
+  ;; (variable-pitch-mode 1)
   (auto-fill-mode 1)
   (display-line-numbers-mode -1)
   (setq fill-column 120))
@@ -139,29 +163,29 @@
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([-]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-(with-eval-after-load 'org
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+;; (with-eval-after-load 'org
+;;   (dolist (face '((org-level-1 . 1.2)
+;;                   (org-level-2 . 1.1)
+;;                   (org-level-3 . 1.05)
+;;                   (org-level-4 . 1.0)
+;;                   (org-level-5 . 1.1)
+;;                   (org-level-6 . 1.1)
+;;                   (org-level-7 . 1.1)
+;;                   (org-level-8 . 1.1)))
+;;     (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
 
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
 ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+;; (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+;; (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+;; (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+;; (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+;; (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+;; (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
 (defface ivy-org
   '((t :inherit default))
@@ -208,9 +232,26 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
+(setq org-roam-directory (file-truename "~/Documents/org-roam"))
+
+(defun org-roam-rg ()
+  "Ripgrep search the org-roam directory"
+  (interactive)
+  (unless (boundp 'org-roam-directory)
+    (error "org-roam-directory is not set"))
+  (let ((default-directory org-roam-directory))
+    (counsel-rg nil org-roam-directory "-i" "Search org-roam (case insensitive): ")))
+
+(global-set-key (kbd "C-c n r") #'org-roam-rg)
+
 (add-hook 'org-mode-hook
           (lambda ()
             (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
+
+(make-directory "~/Documents/org-agenda/" t)
+(setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))
+
+(global-set-key (kbd "C-c n a") 'org-agenda)
 
 (global-set-key (kbd "C-x O") 'other-frame)
 
@@ -220,6 +261,9 @@
 (global-set-key (kbd "C-M-<up>") 'enlarge-window)
 
 (global-set-key (kbd "M-o") 'ace-window)
+(global-set-key (kbd "M-O") 'ace-swap-window)
+
+(global-set-key (kbd "C-c v n") 'multi-vterm)
 
 (use-package counsel
   :config
@@ -239,6 +283,8 @@
   (setq ivy-height 15)
   (setopt ivy-use-virtual-buffers t)
   (setopt ivy-count-format "(%d/%d) "))
+
+(setq ivy-read-action-format-function #'ivy-read-action-format-columns)
 
 ;; Remove the leading regex "^" from the counsel search for M-x
 (ivy-configure 'counsel-M-x
@@ -263,7 +309,7 @@
     (treemacs-follow-mode t))
   :bind
   (:map global-map
-        ("C-x t t" . treemacs)))
+        ("C-c t t" . treemacs)))
 
 (use-package treemacs-nerd-icons
   :after (treemacs)
@@ -315,14 +361,89 @@
 
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (c-mode . c-ts-mode)))
+        (c-mode . c-ts-mode)
+        (gdscript-mode . gdscript-ts-mode)))
+
+(use-package reformatter
+  :ensure t)
+
+(reformatter-define gdformat-format
+  :program "gdformat"
+  :args '("-"))
+
+(add-hook 'gdscript-ts-mode #'gdformat-format-on-save-mode)
 
 (use-package projectile
-  :defer t)
+  :defer t
+  :config
+  (projectile-load-known-projects))
+
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (setq counsel-projectile-preview-buffers t))
+
+(counsel-projectile-mode +1)
+
+(setq counsel-projectile-switch-project-action
+      '(13
+        ("o" counsel-projectile-switch-project-action
+         "jump to a project buffer or file")
+        ("f" counsel-projectile-switch-project-action-find-file
+         "jump to a project file")
+        ("d" counsel-projectile-switch-project-action-find-dir
+         "jump to a project directory")
+        ("D" counsel-projectile-switch-project-action-dired
+         "open project in dired")
+        ("b" counsel-projectile-switch-project-action-switch-to-buffer
+         "jump to a project buffer")
+        ("m" counsel-projectile-switch-project-action-find-file-manually
+         "find file manually from project root")
+        ("S" counsel-projectile-switch-project-action-save-all-buffers
+         "save all project buffers")
+        ("k" counsel-projectile-switch-project-action-kill-buffers
+         "kill all project buffers")
+        ("K" counsel-projectile-switch-project-action-remove-known-project
+         "remove project from known projects")
+        ("c" counsel-projectile-switch-project-action-compile
+         "run project compilation command")
+        ("C" counsel-projectile-switch-project-action-configure
+         "run project configure command")
+        ("E" counsel-projectile-switch-project-action-edit-dir-locals
+         "edit project dir-locals")
+        ("v" counsel-projectile-switch-project-action-vc
+         "open project in vc-dir / magit / monky")
+        ("sg" counsel-projectile-switch-project-action-grep
+         "search project with grep")
+        ("si" counsel-projectile-switch-project-action-git-grep
+         "search project with git grep")
+        ("ss" counsel-projectile-switch-project-action-ag
+         "search project with ag")
+        ("sr" counsel-projectile-switch-project-action-rg
+         "search project with rg")
+        ("xs" counsel-projectile-switch-project-action-run-shell
+         "invoke shell from project root")
+        ("xe" counsel-projectile-switch-project-action-run-eshell
+         "invoke eshell from project root")
+        ("xt" counsel-projectile-switch-project-action-run-term
+         "invoke term from project root")
+        ("xv" counsel-projectile-switch-project-action-run-vterm
+         "invoke vterm from project root")
+        ("Oc" counsel-projectile-switch-project-action-org-capture
+         "capture into project")
+        ("Oa" counsel-projectile-switch-project-action-org-agenda
+         "open project agenda")))
+
 (use-package vterm
+  :ensure t)
+
+(use-package ripgrep
+  :ensure t)
+
+(use-package multi-vterm
   :ensure t)
 
 (use-package avy
@@ -330,19 +451,15 @@
   :bind
   (:map global-map
         ("C-:" . 'avy-goto-char)))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company counsel diredfl doom-modeline doom-themes ivy-rich magit
-             nerd-icons-dired org-auto-tangle org-roam org-superstar
-             pass pdf-tools projectile pyvenv rainbow-delimiters
-             treemacs-nerd-icons vterm vundo)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+(use-package gdscript-mode
+  :defer t
+  :hook (gdscript-ts-mode . eglot-ensure)
+  :custom (gdscript-eglot-version 4))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(gdscript-ts-mode "localhost" 6005)))
+
+(use-package crontab-mode
+  :defer t)
