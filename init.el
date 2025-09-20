@@ -14,7 +14,23 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(setq inhibit-startup-message t)
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title "EMACS")
+  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-center-content t)
+  (setq dashboard-vertically-center-content t)
+  (setq dashboard-items '((recents   . 5)
+            (projects  . 5)
+            (agenda    . 5)
+            (bookmarks . 5)
+            (registers . 5)))
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-action-vc)
+  (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
+  (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda))
 
 (scroll-bar-mode -1)  ; Disable visible scrollbar
 (tool-bar-mode -1)    ; Disable the toolbar
@@ -100,6 +116,8 @@
 (eval-after-load "dired" '(progn
 			    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
 			    (define-key dired-mode-map (kbd "a") 'dired-find-file)))
+
+(set-face-attribute 'default nil :family "Adwaita Mono" :height 105 :weight 'bold)
 
 ;; Disable backup and auto-save for TRAMP files
 (defun my-disable-tramp-backups ()
@@ -388,6 +406,7 @@
 
 (counsel-projectile-mode +1)
 
+;; Set the default switch project (C-c p p) action to open Magit in the project
 (setq counsel-projectile-switch-project-action
       '(13
         ("o" counsel-projectile-switch-project-action
@@ -436,6 +455,12 @@
          "capture into project")
         ("Oa" counsel-projectile-switch-project-action-org-agenda
          "open project agenda")))
+
+;; Set the default behavior of the Magit buffer to reuse the current window
+;; This prevents the projectile project switch from splitting the frame
+(setq display-buffer-alist
+    '(("magit:.**"
+       (display-buffer-reuse-window display-buffer-same-window))))
 
 (use-package vterm
   :ensure t)
