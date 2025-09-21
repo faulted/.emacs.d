@@ -478,7 +478,7 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
     :program "gdformat"
     :args '("-"))
 
-  (add-hook 'gdscript-ts-mode #'gdformat-format-on-save-mode)
+  (add-hook 'gdscript-ts-mode-hook #'gdformat-format-on-save-mode)
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp

@@ -389,7 +389,7 @@
   :program "gdformat"
   :args '("-"))
 
-(add-hook 'gdscript-ts-mode #'gdformat-format-on-save-mode)
+(add-hook 'gdscript-ts-mode-hook #'gdformat-format-on-save-mode)
 
 (use-package projectile
   :defer t
