@@ -588,6 +588,8 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
                  '(gdscript-ts-mode "localhost" 6005)))
+
+  (setq gdscript-godot-executable "/home/chris/primary/SteamLibrary/steamapps/common/Godot Engine/godot.x11.opt.tools.64")
 #+end_src
 * crontab mode
 #+begin_src emacs-lisp

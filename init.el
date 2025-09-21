@@ -486,5 +486,7 @@
   (add-to-list 'eglot-server-programs
                '(gdscript-ts-mode "localhost" 6005)))
 
+(setq gdscript-godot-executable "/home/chris/primary/SteamLibrary/steamapps/common/Godot Engine/godot.x11.opt.tools.64")
+
 (use-package crontab-mode
   :defer t)
