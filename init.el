@@ -166,7 +166,7 @@
   ;; (variable-pitch-mode 1)
   (auto-fill-mode 1)
   (display-line-numbers-mode -1)
-  (setq fill-column 120))
+  (setq fill-column 100))
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
@@ -487,6 +487,8 @@
                '(gdscript-ts-mode "localhost" 6005)))
 
 (setq gdscript-godot-executable "/home/chris/primary/SteamLibrary/steamapps/common/Godot Engine/godot.x11.opt.tools.64")
+
+(add-hook 'gdscript-ts-mode-hook 'indent-tabs-mode)
 
 (use-package crontab-mode
   :defer t)
