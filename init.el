@@ -376,8 +376,8 @@ targets."
   (keymap-global-set "C-h o" #'counsel-describe-symbol)
   (keymap-global-set "C-x C-f" #'counsel-find-file)
   (keymap-global-set "M-x" #'counsel-M-x)
-  (keymap-global-set "C-c r" #'counsel-rg)
-  (keymap-global-set "C-c l" #'counsel-locate)
+  (keymap-global-set "C-c c r" #'counsel-rg)
+  (keymap-global-set "C-c c l" #'counsel-locate)
   (keymap-global-set "C-x b" #'counsel-switch-buffer))
 
 (use-package ivy
@@ -438,11 +438,19 @@ targets."
   (:map global-map
         ("C-x u" . vundo)))
 
-(use-package company)
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-tooltip-idle-delay 0.1)
-(setq compandy-idle-delay  0.1)
-(setq company-minimum-prefix-length 1)
+(use-package company
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+              ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 (add-hook 'python-ts-mode-hook 'eglot-ensure)
 (add-hook 'c-ts-mode-hook 'eglot-ensure)
@@ -487,12 +495,6 @@ targets."
 
 (use-package reformatter
   :ensure t)
-
-(reformatter-define gdformat-format
-  :program "gdformat"
-  :args '("-"))
-
-(add-hook 'gdscript-ts-mode-hook #'gdformat-format-on-save-mode)
 
 (use-package projectile
   :defer t
@@ -580,23 +582,47 @@ targets."
   (:map global-map
         ("C-:" . 'avy-goto-char)))
 
-(use-package gdscript-mode
+(use-package lsp-mode
   :defer t
-  :hook (gdscript-ts-mode . eglot-ensure)
-  :custom (gdscript-eglot-version 4))
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook
+  (python-ts-mode . lsp)
+  (gdscript-ts-mode . lsp)
+  (lsp-mode . lsp-enable-which-key-integration)
+  :commands lsp)
 
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '(gdscript-ts-mode "localhost" 6005)))
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-show-with-cursor t)
+  (setq lsp-ui-doc-position 'top)
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+
+
+(use-package lsp-ivy
+  :commands lsp-ivy-workspace-symbol)
+
+(use-package gdscript-mode
+  :defer t)
 
 (setq gdscript-godot-executable "/home/chris/primary/SteamLibrary/steamapps/common/Godot Engine/godot.x11.opt.tools.64")
 
 (add-hook 'gdscript-ts-mode-hook 'indent-tabs-mode)
 
-(defun my/gdscript-ts-mode-before-save-hook ()
-  (when (eq major-mode 'gdscript-ts-mode)
-    (interactive)
-    (tabify (point-min) (point-max))))
+(reformatter-define gdformat-format
+  :program "gdformat"
+  :args '("-"))
+
+(add-hook 'gdscript-ts-mode-hook #'gdformat-format-on-save-mode)
+
+(defun my/suppress-gdscript-warning (orig-fun type message &rest args)
+  "Suppress gdscript/capabilities warnings."
+  (unless (string-match-p "Unknown notification: gdscript/capabilities" message)
+    (apply orig-fun type message args)))
+
+(advice-add 'display-warning :around #'my/suppress-gdscript-warning)
 
 (use-package crontab-mode
   :defer t)
