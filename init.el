@@ -205,6 +205,8 @@ targets."
 (advice-add #'embark-completing-read-prompter
             :around #'embark-hide-which-key-indicator)
 
+(fset 'yes-or-no-p 'y-or-n-p)
+
 ;; Disable backup and auto-save for TRAMP files
 (defun my-disable-tramp-backups ()
   "Disable backups and auto-saves for TRAMP files."

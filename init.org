@@ -251,6 +251,10 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (advice-add #'embark-completing-read-prompter
               :around #'embark-hide-which-key-indicator)
 #+end_src
+** y or n
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
 * TRAMP
 #+begin_src emacs-lisp
   ;; Disable backup and auto-save for TRAMP files
