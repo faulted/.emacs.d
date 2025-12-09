@@ -27,6 +27,7 @@
             (agenda    . 5)
             (bookmarks . 5)
             (registers . 5)))
+  (setq dashboard-projects-backend 'projectile)
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-action-vc)
   (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
   (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
