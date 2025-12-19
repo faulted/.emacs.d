@@ -163,7 +163,12 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
 #+end_src
 ** Set font face and size
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :family "Adwaita Mono" :height 105 :weight 'bold)
+  (set-face-attribute 'default nil
+                      :weight 'normal
+  		            ;; :background "#2E3440"
+  		            ;; :foreground "#ECEFF4"
+  		            :height 100
+  		            :family "Iosevka SS03")
 #+end_src
 ** Shutdown computer function
 #+begin_src emacs-lisp
@@ -172,85 +177,6 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
     (interactive)
     (when (yes-or-no-p "Are you sure you want to shutdown the computer? ")
       (shell-command "shutdown now")))
-#+end_src
-** Embark
-#+begin_src emacs-lisp
-  (use-package marginalia
-    :ensure t
-    :config
-    (marginalia-mode))
-
-  (use-package embark
-    :ensure t
-
-    :bind
-    (("C-." . embark-act)         ;; pick some comfortable binding
-     ("C-;" . embark-dwim)        ;; good alternative: M-.
-     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-    :init
-
-    ;; Optionally replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command)
-
-    ;; Show the Embark target at point via Eldoc. You may adjust the
-    ;; Eldoc strategy, if you want to see the documentation from
-    ;; multiple providers. Beware that using this can be a little
-    ;; jarring since the message shown in the minibuffer can be more
-    ;; than one line, causing the modeline to move up and down:
-
-    ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-    ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
-    ;; Add Embark to the mouse context menu. Also enable `context-menu-mode'.
-    ;; (context-menu-mode 1)
-    ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
-
-    :config
-
-    ;; Hide the mode line of the Embark live/completions buffers
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                   nil
-                   (window-parameters (mode-line-format . none)))))
-
-  (defun embark-which-key-indicator ()
-    "An embark indicator that displays keymaps using which-key.
-  The which-key help message will show the type and value of the
-  current target followed by an ellipsis if there are further
-  targets."
-    (lambda (&optional keymap targets prefix)
-      (if (null keymap)
-          (which-key--hide-popup-ignore-command)
-        (which-key--show-keymap
-         (if (eq (plist-get (car targets) :type) 'embark-become)
-             "Become"
-           (format "Act on %s '%s'%s"
-                   (plist-get (car targets) :type)
-                   (embark--truncate-target (plist-get (car targets) :target))
-                   (if (cdr targets) "…" "")))
-         (if prefix
-             (pcase (lookup-key keymap prefix 'accept-default)
-               ((and (pred keymapp) km) km)
-               (_ (key-binding prefix 'accept-default)))
-           keymap)
-         nil nil t (lambda (binding)
-                     (not (string-suffix-p "-argument" (cdr binding))))))))
-
-  (setq embark-indicators
-    '(embark-which-key-indicator
-      embark-highlight-indicator
-      embark-isearch-highlight-indicator))
-
-  (defun embark-hide-which-key-indicator (fn &rest args)
-    "Hide the which-key indicator immediately when using the completing-read prompter."
-    (which-key--hide-popup-ignore-command)
-    (let ((embark-indicators
-           (remq #'embark-which-key-indicator embark-indicators)))
-        (apply fn args)))
-
-  (advice-add #'embark-completing-read-prompter
-              :around #'embark-hide-which-key-indicator)
 #+end_src
 ** y or n
 #+begin_src emacs-lisp
@@ -448,42 +374,45 @@ I need to set up keybindings to make using org-roam more intuitive
 #+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
-  (use-package counsel
-    :config
-    (keymap-global-set "C-h v" #'counsel-describe-variable)
-    (keymap-global-set "C-h f" #'counsel-describe-function)
-    (keymap-global-set "C-h o" #'counsel-describe-symbol)
-    (keymap-global-set "C-x C-f" #'counsel-find-file)
-    (keymap-global-set "M-x" #'counsel-M-x)
-    (keymap-global-set "C-c c r" #'counsel-rg)
-    (keymap-global-set "C-c c l" #'counsel-locate)
-    (keymap-global-set "C-x b" #'counsel-switch-buffer))
+      (use-package counsel
+        :config
+        (keymap-global-set "C-h v" #'counsel-describe-variable)
+        (keymap-global-set "C-h f" #'counsel-describe-function)
+        (keymap-global-set "C-h o" #'counsel-describe-symbol)
+        (keymap-global-set "C-x C-f" #'counsel-find-file)
+        (keymap-global-set "M-x" #'counsel-M-x)
+        (keymap-global-set "C-c c r" #'counsel-rg)
+        (keymap-global-set "C-c c l" #'counsel-locate)
+        (keymap-global-set "C-x b" #'counsel-switch-buffer))
 
-  (use-package ivy
-    :config
-    (ivy-mode 1)
-    (counsel-mode 1)
-    (setq ivy-height 15)
-    (setopt ivy-use-virtual-buffers t)
-    (setopt ivy-count-format "(%d/%d) "))
+      (use-package ivy
+        :config
+        (ivy-mode 1)
+        (counsel-mode 1)
+        (setq ivy-height 15)
+        (setopt ivy-use-virtual-buffers t)
+        (setopt ivy-count-format "(%d/%d) "))
 
-  (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
-  
-  ;; Remove the leading regex "^" from the counsel search for M-x
-  (ivy-configure 'counsel-M-x
-    :initial-input ""
-    :display-transformer-fn #'counsel-M-x-transformer)
+      (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
 
-  (use-package ivy-rich
-    :after ivy
-    :config
-    (ivy-rich-mode 1)
-    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+      ;; Remove the leading regex "^" from the counsel search for M-x
+      (ivy-configure 'counsel-M-x
+        :initial-input ""
+        :display-transformer-fn #'counsel-M-x-transformer)
 
-  (use-package swiper
-    :config
-    (keymap-global-set "C-M-s" #'swiper)
-    (keymap-global-set "C-s" #'swiper-isearch))
+      (use-package ivy-rich
+        :after ivy
+        :config
+        (ivy-rich-mode 1)
+        (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+
+      (use-package ivy-hydra
+        :after ivy)
+
+      (use-package swiper
+        :config
+        (keymap-global-set "C-M-s" #'swiper)
+        (keymap-global-set "C-s" #'swiper-isearch))
 #+end_src
 * Treemacs
 #+begin_src emacs-lisp
