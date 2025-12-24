@@ -369,8 +369,6 @@ I need to set up keybindings to make using org-roam more intuitive
 
   (global-set-key (kbd "M-o") 'ace-window)
   (global-set-key (kbd "M-O") 'ace-swap-window)
-
-  (global-set-key (kbd "C-c v n") 'multi-vterm)
 #+end_src
 * Ivy, Counsel, and Swiper
 #+begin_src emacs-lisp
@@ -599,19 +597,40 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
       '(("magit:.**"
          (display-buffer-reuse-window display-buffer-same-window))))
 #+end_src
-** Vterm
+** vterm
 #+begin_src emacs-lisp
   (use-package vterm
-    :ensure t)
+    :ensure t
+    :config
+    (setq vterm-max-scrollback 20000))
+
+  ;; Uninstalled for now
+  ;; (use-package multi-vterm
+  ;;   :ensure t)
+
+  (defun vterm-rename-buffer (name)
+    (interactive "sName? ")
+    (if (eq major-mode 'vterm-mode)
+        (rename-buffer (format "*vterm*<%s>" name))
+      (error "Not a vterm buffer")))
+
+  (global-set-key (kbd "C-c v n") 'vterm)
+  (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+#+end_src
+** shell-mode
+#+begin_src emacs-lisp
+  ;; (defun shell-rename-buffer (name)
+  ;;   (interactive "sName? ")
+  ;;   (if (eq major-mode 'shell-mode)
+  ;;       (rename-buffer (format "*shell*<%s>" name))
+  ;;     (error "Not a shell buffer")))
+
+  ;; (global-set-key (kbd "<f1>") 'shell)
+  ;; (global-set-key (kbd "C-c r") 'shell-rename-buffer)
 #+end_src
 ** Ripgrep
 #+begin_src emacs-lisp
   (use-package ripgrep
-    :ensure t)
-#+end_src
-** multi-vterm
-#+begin_src emacs-lisp
-  (use-package multi-vterm
     :ensure t)
 #+end_src
 ** Avy

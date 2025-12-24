@@ -298,8 +298,6 @@
 (global-set-key (kbd "M-o") 'ace-window)
 (global-set-key (kbd "M-O") 'ace-swap-window)
 
-(global-set-key (kbd "C-c v n") 'multi-vterm)
-
 (use-package counsel
   :config
   (keymap-global-set "C-h v" #'counsel-describe-variable)
@@ -502,12 +500,33 @@
        (display-buffer-reuse-window display-buffer-same-window))))
 
 (use-package vterm
-  :ensure t)
+  :ensure t
+  :config
+  (setq vterm-max-scrollback 20000))
+
+;; Uninstalled for now
+;; (use-package multi-vterm
+;;   :ensure t)
+
+(defun vterm-rename-buffer (name)
+  (interactive "sName? ")
+  (if (eq major-mode 'vterm-mode)
+      (rename-buffer (format "*vterm*<%s>" name))
+    (error "Not a vterm buffer")))
+
+(global-set-key (kbd "C-c v n") 'vterm)
+(global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+
+;; (defun shell-rename-buffer (name)
+;;   (interactive "sName? ")
+;;   (if (eq major-mode 'shell-mode)
+;;       (rename-buffer (format "*shell*<%s>" name))
+;;     (error "Not a shell buffer")))
+
+;; (global-set-key (kbd "<f1>") 'shell)
+;; (global-set-key (kbd "C-c r") 'shell-rename-buffer)
 
 (use-package ripgrep
-  :ensure t)
-
-(use-package multi-vterm
   :ensure t)
 
 (use-package avy
