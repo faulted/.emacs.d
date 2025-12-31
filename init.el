@@ -54,10 +54,11 @@
 (doom-themes-org-config)
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1)
+  ;; :init (doom-modeline-mode 1)
   :custom
   ((doom-modeline-height 30)
-   (doom-modeline-total-line-number t)))
+   (doom-modeline-total-line-number t)
+   (doom-modeline-minor-modes t)))
 
 ;; Automatically revert the buffer to keep the Git branch in the modeline up to date.
 (setq auto-revert-check-vc-info t)
@@ -76,6 +77,8 @@
 (setq delete-old-versions t)
 (setq kept-new-versions 6)
 (setq kept-old-versions 2)
+
+(column-number-mode)
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
@@ -516,6 +519,19 @@
 
 (global-set-key (kbd "C-c v n") 'vterm)
 (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+
+(global-set-key (kbd "C-c v p") 'proced)
+
+(setq-default proced-auto-update-flag t)
+(setq-default proced-tree-flag t)
+(setq proced-auto-update-interval 5)
+(setq proced-enable-color-flag t)
+
+(eval-after-load "proced" '(progn
+  (add-to-list
+   'proced-format-alist
+   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+  (setq-default proced-format 'custom)))
 
 ;; (defun shell-rename-buffer (name)
 ;;   (interactive "sName? ")

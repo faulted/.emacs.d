@@ -74,10 +74,11 @@
 Must run "M-x nerd-icons-install-fonts" on first run on a
 #+begin_src emacs-lisp
   (use-package doom-modeline
-    :init (doom-modeline-mode 1)
+    ;; :init (doom-modeline-mode 1)
     :custom
     ((doom-modeline-height 30)
-     (doom-modeline-total-line-number t)))
+     (doom-modeline-total-line-number t)
+     (doom-modeline-minor-modes t)))
 
   ;; Automatically revert the buffer to keep the Git branch in the modeline up to date.
   (setq auto-revert-check-vc-info t)
@@ -98,6 +99,10 @@ Must run "M-x nerd-icons-install-fonts" on first run on a
   (setq delete-old-versions t)
   (setq kept-new-versions 6)
   (setq kept-old-versions 2)
+#+end_src
+** Enable column number mode
+#+begin_src emacs-lisp
+  (column-number-mode)
 #+end_src
 ** prog-mode enable line numbers
 #+begin_src emacs-lisp
@@ -616,6 +621,21 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
 
   (global-set-key (kbd "C-c v n") 'vterm)
   (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+#+end_src
+** proced
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c v p") 'proced)
+
+  (setq-default proced-auto-update-flag t)
+  (setq-default proced-tree-flag t)
+  (setq proced-auto-update-interval 5)
+  (setq proced-enable-color-flag t)
+
+  (eval-after-load "proced" '(progn
+    (add-to-list
+     'proced-format-alist
+     '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+    (setq-default proced-format 'custom)))
 #+end_src
 ** shell-mode
 #+begin_src emacs-lisp
