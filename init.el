@@ -14,6 +14,8 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package no-littering)
+
 (use-package dashboard
   :ensure t
   :config
@@ -355,15 +357,6 @@
   :config
   (treemacs-load-theme "nerd-icons"))
 
-(use-package tablist)
-
-(use-package pdf-tools)
-(pdf-loader-install)
-
-(defun my/pdf-mode-hook ()
-  (display-line-numbers-mode -1))
-(add-hook 'pdf-view-mode-hook 'my/pdf-mode-hook)
-
 (use-package magit
   :defer t)
 
@@ -374,12 +367,9 @@
         ("C-x u" . vundo)))
 
 (use-package company
-  :after lsp-mode
-  :hook (prog-mode . company-mode)
+  :hook ((prog-mode emacs-lisp-mode) . company-mode)
   :bind (:map company-active-map
               ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-              ("<tab>" . company-indent-or-complete-common))
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
@@ -559,7 +549,10 @@
   (python-ts-mode . lsp)
   (gdscript-ts-mode . lsp)
   (lsp-mode . lsp-enable-which-key-integration)
-  :commands lsp)
+  :commands lsp
+  :bind
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common)))
 
 (use-package lsp-ui
   :commands lsp-ui-mode

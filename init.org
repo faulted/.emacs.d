@@ -23,6 +23,10 @@
   (require 'use-package)
   (setq use-package-always-ensure t)
 #+end_src
+** no-littering
+#+begin_src emacs-lisp
+  (use-package no-littering)
+#+end_src
 ** Alternative startup screen
 #+begin_src emacs-lisp
   (use-package dashboard
@@ -433,20 +437,6 @@ I need to set up keybindings to make using org-roam more intuitive
     :config
     (treemacs-load-theme "nerd-icons"))
 #+end_src
-* PDF viewing
-** tablist
-#+begin_src emacs-lisp
-  (use-package tablist)
-#+end_src
-** pdf-tools
-#+begin_src emacs-lisp
-  (use-package pdf-tools)
-  (pdf-loader-install)
-
-  (defun my/pdf-mode-hook ()
-    (display-line-numbers-mode -1))
-  (add-hook 'pdf-view-mode-hook 'my/pdf-mode-hook)
-#+end_src
 * Development
 ** Magit
 #+begin_src emacs-lisp
@@ -465,12 +455,9 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
 ** Company
 #+begin_src emacs-lisp
   (use-package company
-    :after lsp-mode
-    :hook (prog-mode . company-mode)
+    :hook ((prog-mode emacs-lisp-mode) . company-mode)
     :bind (:map company-active-map
                 ("<tab>" . company-complete-selection))
-          (:map lsp-mode-map
-                ("<tab>" . company-indent-or-complete-common))
     :custom
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
@@ -671,7 +658,10 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
     (python-ts-mode . lsp)
     (gdscript-ts-mode . lsp)
     (lsp-mode . lsp-enable-which-key-integration)
-    :commands lsp)
+    :commands lsp
+    :bind
+    (:map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common)))
 
   (use-package lsp-ui
     :commands lsp-ui-mode
