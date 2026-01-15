@@ -25,10 +25,10 @@
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
   (setq dashboard-items '((recents   . 5)
-            (projects  . 5)
-            (agenda    . 5)
-            (bookmarks . 5)
-            (registers . 5)))
+                          (projects  . 5)
+                          (agenda    . 5)
+                          (bookmarks . 5)
+                          (registers . 5)))
   (setq dashboard-projects-backend 'projectile)
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-action-vc)
   (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
@@ -56,7 +56,7 @@
 (doom-themes-org-config)
 
 (use-package doom-modeline
-  ;; :init (doom-modeline-mode 1)
+  :init (doom-modeline-mode 1)
   :custom
   ((doom-modeline-height 30)
    (doom-modeline-total-line-number t)
@@ -123,8 +123,8 @@
 
 (put 'dired-find-alternate-file 'disabled nil)
 (eval-after-load "dired" '(progn
-                (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-                (define-key dired-mode-map (kbd "a") 'dired-find-file)))
+                            (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+                            (define-key dired-mode-map (kbd "a") 'dired-find-file)))
 
 (set-face-attribute 'default nil
                     :weight 'normal
@@ -489,8 +489,8 @@
 ;; Set the default behavior of the Magit buffer to reuse the current window
 ;; This prevents the projectile project switch from splitting the frame
 (setq display-buffer-alist
-    '(("magit:.**"
-       (display-buffer-reuse-window display-buffer-same-window))))
+      '(("magit:.**"
+         (display-buffer-reuse-window display-buffer-same-window))))
 
 (use-package vterm
   :ensure t
@@ -518,10 +518,25 @@
 (setq proced-enable-color-flag t)
 
 (eval-after-load "proced" '(progn
-  (add-to-list
-   'proced-format-alist
-   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
-  (setq-default proced-format 'custom)))
+                             (add-to-list
+                              'proced-format-alist
+                              '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+                             (setq-default proced-format 'custom)))
+
+(defun htop ()
+  "Open htop in a vterm buffer"
+  (interactive)
+  (require 'vterm)
+
+  (let ((buf (vterm "*htop*")))
+    (with-current-buffer buf
+      
+      ;; Clear any prompt and run htop
+      (vterm-send-string "exec htop")
+      (vterm-send-return))
+    buf))
+
+(global-set-key (kbd "C-c v h") 'htop)
 
 ;; (defun shell-rename-buffer (name)
 ;;   (interactive "sName? ")
@@ -588,3 +603,21 @@
 
 (use-package crontab-mode
   :defer t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(company-box counsel-projectile crontab-mode dashboard diredfl
+                 doom-modeline doom-themes gdscript-mode ivy-hydra
+                 ivy-rich lsp-ivy lsp-ui magit nerd-icons-dired
+                 no-littering org-auto-tangle org-roam org-superstar
+                 pass pdf-tools pyvenv rainbow-delimiters reformatter
+                 ripgrep smartparens treemacs-nerd-icons vterm vundo)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

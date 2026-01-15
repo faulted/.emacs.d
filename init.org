@@ -78,7 +78,7 @@
 Must run "M-x nerd-icons-install-fonts" on first run on a
 #+begin_src emacs-lisp
   (use-package doom-modeline
-    ;; :init (doom-modeline-mode 1)
+    :init (doom-modeline-mode 1)
     :custom
     ((doom-modeline-height 30)
      (doom-modeline-total-line-number t)
@@ -623,6 +623,23 @@ To install Treesitter grammar, run "M-x treesit-install-language-grammar"
      'proced-format-alist
      '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
     (setq-default proced-format 'custom)))
+#+end_src
+** htop
+#+begin_src emacs-lisp
+  (defun htop ()
+    "Open htop in a vterm buffer"
+    (interactive)
+    (require 'vterm)
+
+    (let ((buf (vterm "*htop*")))
+      (with-current-buffer buf
+        
+        ;; Clear any prompt and run htop
+        (vterm-send-string "exec htop")
+        (vterm-send-return))
+      buf))
+
+  (global-set-key (kbd "C-c v h") 'htop)
 #+end_src
 ** shell-mode
 #+begin_src emacs-lisp
