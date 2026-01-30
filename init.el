@@ -303,6 +303,8 @@
 (global-set-key (kbd "M-o") 'ace-window)
 (global-set-key (kbd "M-O") 'ace-swap-window)
 
+(global-set-key (kbd "C-x C-b") 'ibuffer-list-buffers)
+
 (use-package counsel
   :config
   (keymap-global-set "C-h v" #'counsel-describe-variable)
@@ -608,13 +610,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-box counsel-projectile crontab-mode dashboard diredfl
-                 doom-modeline doom-themes gdscript-mode ivy-hydra
-                 ivy-rich lsp-ivy lsp-ui magit nerd-icons-dired
-                 no-littering org-auto-tangle org-roam org-superstar
-                 pass pdf-tools pyvenv rainbow-delimiters reformatter
-                 ripgrep smartparens treemacs-nerd-icons vterm vundo)))
+ '(auth-source-save-behavior nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
