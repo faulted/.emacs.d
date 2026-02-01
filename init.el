@@ -25,10 +25,10 @@
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
   (setq dashboard-items '((recents   . 5)
-                          (projects  . 5)
-                          (agenda    . 5)
-                          (bookmarks . 5)
-                          (registers . 5)))
+            (projects  . 5)
+            (agenda    . 5)
+            (bookmarks . 5)
+            (registers . 5)))
   (setq dashboard-projects-backend 'projectile)
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-action-vc)
   (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
@@ -123,8 +123,8 @@
 
 (put 'dired-find-alternate-file 'disabled nil)
 (eval-after-load "dired" '(progn
-                            (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-                            (define-key dired-mode-map (kbd "a") 'dired-find-file)))
+                (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+                (define-key dired-mode-map (kbd "a") 'dired-find-file)))
 
 (set-face-attribute 'default nil
                     :weight 'normal
@@ -325,6 +325,7 @@
   (setopt ivy-count-format "(%d/%d) "))
 
 (setq ivy-read-action-format-function #'ivy-read-action-format-columns)
+(setq ivy-use-selectable-prompt t)
 
 ;; Remove the leading regex "^" from the counsel search for M-x
 (ivy-configure 'counsel-M-x
@@ -491,8 +492,8 @@
 ;; Set the default behavior of the Magit buffer to reuse the current window
 ;; This prevents the projectile project switch from splitting the frame
 (setq display-buffer-alist
-      '(("magit:.**"
-         (display-buffer-reuse-window display-buffer-same-window))))
+    '(("magit:.**"
+       (display-buffer-reuse-window display-buffer-same-window))))
 
 (use-package vterm
   :ensure t
@@ -520,10 +521,10 @@
 (setq proced-enable-color-flag t)
 
 (eval-after-load "proced" '(progn
-                             (add-to-list
-                              'proced-format-alist
-                              '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
-                             (setq-default proced-format 'custom)))
+  (add-to-list
+   'proced-format-alist
+   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+  (setq-default proced-format 'custom)))
 
 (defun htop ()
   "Open htop in a vterm buffer"
@@ -605,15 +606,3 @@
 
 (use-package crontab-mode
   :defer t)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(auth-source-save-behavior nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
