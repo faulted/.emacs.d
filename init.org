@@ -1,6 +1,6 @@
-#+TITLE: Init
+#+TITLE: init.org - 2026
 #+AUTHOR: Chris
-#+STARTUP: showeverything
+#+STARTUP: content
 #+PROPERTY: header-args :tangle "~/.emacs.d/init.el"
 #+auto_tangle: t
 
@@ -127,61 +127,29 @@ I need to set up keybindings to make using org-roam more intuitive
 
   (global-set-key (kbd "C-c n a") 'org-agenda)
 #+end_src
-** Configure ace-window
-Much quicker and more useful than the default "C-x o" binding
+** which-key-mode
 #+begin_src emacs-lisp
-  (global-set-key (kbd "M-o") 'ace-window)
-  (global-set-key (kbd "M-O") 'ace-swap-window)
+  (which-key-mode)
 #+end_src
-* Theme
-** Set theme to standard-light-tinted
+* Keybindings
 #+begin_src emacs-lisp
-  ;; Dependency package for standard-themes
-  (use-package modus-themes
-    :ensure t)
+  ;; Unbind compose-mail
+  (unbind-key "C-x m")
 
-  (use-package standard-themes
-    :ensure t
-    :init
-    (standard-themes-take-over-modus-themes-mode 1)
-    :config
-    (setq modus-themes-mixed-fonts t)
-    (setq modus-themes-italic-constructs t)
-    (modus-themes-load-theme 'standard-light-tinted))
-#+end_src
-* Emacs Dashboard
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :config
-    (dashboard-setup-startup-hook)
-    (setq dashboard-banner-logo-title "EMACS")
-    (setq dashboard-startup-banner 'logo)
-    (setq dashboard-center-content t)
-    (setq dashboard-vertically-center-content t)
-    (setq dashboard-items '((recents   . 5)
-              (projects  . 5)
-              (agenda    . 5)
-              (bookmarks . 5)
-              (registers . 5)))
-    (setq dashboard-projects-backend 'projectile)
-    (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-action-vc)
-    (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
-    (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
-    (setq dashboard-set-heading-icons t)
-    (setq dashboard-set-file-icons t)
-    (setq dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
-    (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:"))))
-#+end_src
-* Projectile
-#+begin_src emacs-lisp
-  (use-package projectile
-    :defer t
-    :config
-    (projectile-load-known-projects))
-  
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  ;; Set up ibuffer keybind
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+  ;; Set up undo and redo keybindings
+  (global-set-key (kbd "C-z") 'undo)
+  (global-set-key (kbd "C-S-z") 'undo-redo)
+
+  ;; Set up other-window and ace-window
+  (global-set-key (kbd "M-o") 'other-window)
+  (global-set-key (kbd "M-O") 'ace-window)
+  (global-set-key (kbd "C-M-o") 'ace-swap-window)
+
+  ;; Set up split-line since I just overwrote it with ace-swap-window
+  (global-set-key (kbd "C-x o") 'split-line)
 #+end_src
 * Custom functions
 ** Definitons
@@ -197,4 +165,65 @@ Disables the audio bell and sets up the visual bell
 ** Function calls
 #+begin_src emacs-lisp
   (setq ring-bell-function #'my/visual-bell)
+#+end_src
+* Packages
+** Theme
+*** Set theme to standard-light-tinted
+#+begin_src emacs-lisp
+  ;; ;; Dependency package for standard-themes
+  ;; (use-package modus-themes
+  ;;   :ensure t)
+
+  ;; (use-package standard-themes
+  ;;   :ensure t
+  ;;   :init
+  ;;   (standard-themes-take-over-modus-themes-mode 1)
+  ;;   :config
+  ;;   (setq modus-themes-mixed-fonts t)
+  ;;   (setq modus-themes-italic-constructs t)
+  ;;   (modus-themes-load-theme 'standard-light-tinted))
+#+end_src
+*** Set theme to modus-vivendi
+#+begin_src emacs-lisp :eval no
+  (use-package modus-themes
+    :ensure t
+    :config
+    (modus-themes-load-theme 'modus-vivendi))
+#+end_src
+** Emacs Dashboard
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-banner-logo-title "EMACS")
+    (setq dashboard-startup-banner 'logo)
+    (setq dashboard-center-content t)
+    (setq dashboard-vertically-center-content t)
+    (setq dashboard-items '((recents   . 5)
+              (projects  . 5)
+              (agenda    . 5)
+              (bookmarks . 5)
+              (registers . 5)))
+    (setq dashboard-projects-backend 'projectile)
+    ;; (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+    ;; (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
+    (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:"))))
+#+end_src
+** Projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :defer t
+    :config
+    (projectile-load-known-projects))
+  
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+#+end_src
+** no-littering
+#+begin_src emacs-lisp
+  (use-package no-littering)
 #+end_src
