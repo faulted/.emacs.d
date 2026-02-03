@@ -163,7 +163,7 @@ Configure auto-tangle so we don't have to manually tangle our init file
 ** scroll-conservatively
 Don't jump scroll at the bottom or top of the window
 #+begin_src emacs-lisp
-  (setq scroll-conservatively 0)
+  (setq scroll-conservatively 101)
 #+end_src
 ** help-window-select
 #+begin_src emacs-lisp
@@ -172,6 +172,10 @@ Don't jump scroll at the bottom or top of the window
 ** auto-save-visited-mode
 #+begin_src emacs-lisp
   (auto-save-visited-mode 1)
+#+end_src
+** Disable lockfiles
+#+begin_src emacs-lisp
+  (setq create-lockfiles nil)
 #+end_src
 * Keybindings
 #+begin_src emacs-lisp
@@ -248,32 +252,28 @@ Disables the audio bell and sets up the visual bell
     :ensure t
     :config
     (dashboard-setup-startup-hook)
-    (setq dashboard-banner-logo-title "EMACS")
+    (setq dashboard-banner-logo-title nil)
     (setq dashboard-startup-banner 2)
     (setq dashboard-center-content t)
     (setq dashboard-vertically-center-content t)
     (setq dashboard-items '((recents   . 5)
-              (projects  . 5)
-              (agenda    . 5)
-              (bookmarks . 5)
-              (registers . 5)))
+  			  (projects  . 5)
+  			  (agenda    . 5)
+  			  (bookmarks . 5)
+  			  (registers . 5)))
     (setq dashboard-projects-backend 'projectile)
     ;; (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
     ;; (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
     (setq dashboard-set-heading-icons t)
     (setq dashboard-set-file-icons t)
     (setq dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
-    (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:"))))
-#+end_src
-** Projectile
-#+begin_src emacs-lisp
-  (use-package projectile
-    :defer t
-    :config
-    (projectile-load-known-projects))
-  
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:")))
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                (run-at-time 0.1 nil
+  			   (lambda ()
+                               (when (eq major-mode 'dashboard-mode)
+                                 (revert-buffer :ignore-auto :noconfirm)))))))
 #+end_src
 ** no-littering
 #+begin_src emacs-lisp
@@ -286,13 +286,22 @@ Disables the audio bell and sets up the visual bell
     :config
     (setq vterm-max-scrollback 20000))
 
+  ;; This function effectively does what multi-vterm did without an extra package
+  (defun multi-vterm ()
+    (interactive)
+    (let ((n 1)
+  	name)
+      (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+        (setq n (1+ n)))
+      (vterm name)))
+
   (defun vterm-rename-buffer (name)
     (interactive "sName? ")
     (if (eq major-mode 'vterm-mode)
         (rename-buffer (format "*vterm*<%s>" name))
       (error "Not a vterm buffer")))
 
-  (global-set-key (kbd "C-c v n") 'vterm)
+  (global-set-key (kbd "C-c v n") 'multi-vterm)
   (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
 #+end_src
 ** Rainbow Parentheses
@@ -320,19 +329,17 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
 ** Magit
 #+begin_src emacs-lisp
   (use-package magit
-    :defer t)
+    :defer t
+    :bind
+    (:map global-map
+  	("C-x m m" . magit)
+  	("C-x m b" . magit-blame)))
 #+end_src
 ** Minions
 #+begin_src emacs-lisp
   (use-package minions
     :config
     (minions-mode 1))
-#+end_src
-** Vertico
-#+begin_src emacs-lisp
-  (use-package vertico
-    :init
-    (vertico-mode))
 #+end_src
 ** Marginalia
 #+begin_src emacs-lisp
@@ -342,11 +349,7 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
     :init
     (marginalia-mode))
 #+end_src
-** Orderless
+** fido
 #+begin_src emacs-lisp
-  (use-package orderless
-    :ensure t
-    :custom
-    (completion-styles '(orderless basic))
-    (completion-category-overrides '((file (styles partial-completion)))))
+  (fido-vertical-mode)
 #+end_src

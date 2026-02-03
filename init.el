@@ -123,11 +123,13 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(setq scroll-conservatively 0)
+(setq scroll-conservatively 101)
 
 (setq help-window-select t)
 
 (auto-save-visited-mode 1)
+
+(setq create-lockfiles nil)
 
 ;; Unbind compose-mail
 (unbind-key "C-x m")
@@ -186,30 +188,28 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title "EMACS")
+  (setq dashboard-banner-logo-title nil)
   (setq dashboard-startup-banner 2)
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
   (setq dashboard-items '((recents   . 5)
-            (projects  . 5)
-            (agenda    . 5)
-            (bookmarks . 5)
-            (registers . 5)))
+			  (projects  . 5)
+			  (agenda    . 5)
+			  (bookmarks . 5)
+			  (registers . 5)))
   (setq dashboard-projects-backend 'projectile)
   ;; (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
   ;; (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
-  (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:"))))
-
-(use-package projectile
-  :defer t
-  :config
-  (projectile-load-known-projects))
-
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:")))
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (run-at-time 0.1 nil
+			   (lambda ()
+                             (when (eq major-mode 'dashboard-mode)
+                               (revert-buffer :ignore-auto :noconfirm)))))))
 
 (use-package no-littering)
 
@@ -218,13 +218,22 @@
   :config
   (setq vterm-max-scrollback 20000))
 
+;; This function effectively does what multi-vterm did without an extra package
+(defun multi-vterm ()
+  (interactive)
+  (let ((n 1)
+	name)
+    (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+      (setq n (1+ n)))
+    (vterm name)))
+
 (defun vterm-rename-buffer (name)
   (interactive "sName? ")
   (if (eq major-mode 'vterm-mode)
       (rename-buffer (format "*vterm*<%s>" name))
     (error "Not a vterm buffer")))
 
-(global-set-key (kbd "C-c v n") 'vterm)
+(global-set-key (kbd "C-c v n") 'multi-vterm)
 (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
 
 (use-package rainbow-delimiters
@@ -243,15 +252,15 @@
         ("C-x u" . vundo)))
 
 (use-package magit
-  :defer t)
+  :defer t
+  :bind
+  (:map global-map
+	("C-x m m" . magit)
+	("C-x m b" . magit-blame)))
 
 (use-package minions
   :config
   (minions-mode 1))
-
-(use-package vertico
-  :init
-  (vertico-mode))
 
 (use-package marginalia
   :bind (:map minibuffer-local-map
@@ -259,8 +268,4 @@
   :init
   (marginalia-mode))
 
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion)))))
+(fido-vertical-mode)
