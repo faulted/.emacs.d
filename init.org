@@ -54,6 +54,49 @@ Common configurations for built-in packages
 #+begin_src emacs-lisp
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+end_src
+** which-key-mode
+#+begin_src emacs-lisp
+  (which-key-mode)
+#+end_src
+** Show file path in title frame
+#+begin_src emacs-lisp
+  (setq frame-title-format
+        (list (format "%s %%S: %%j " (system-name))
+              '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+#+end_src
+** y or n
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+** scroll-conservatively
+Don't jump scroll at the bottom or top of the window
+#+begin_src emacs-lisp
+  (setq scroll-conservatively 101)
+#+end_src
+** help-window-select
+#+begin_src emacs-lisp
+  (setq help-window-select t)
+#+end_src
+** auto-save-visited-mode
+#+begin_src emacs-lisp
+  (auto-save-visited-mode 1)
+#+end_src
+** Disable lockfiles
+#+begin_src emacs-lisp
+  (setq create-lockfiles nil)
+#+end_src
+** TRAMP
+#+begin_src emacs-lisp
+  ;; Disable backup and auto-save for TRAMP files
+  (defun disable-tramp-backups ()
+    "Disable backups and auto-saves for TRAMP files."
+    (when (and buffer-file-name (file-remote-p buffer-file-name))
+      (setq-local make-backup-files nil)
+      (setq-local auto-save-default nil)
+      (setq-local create-lockfiles nil)))
+
+  (add-hook 'find-file-hook #'disable-tramp-backups)
+#+end_src
 ** Org-Mode
 org-mode related packages and settings
 *** org-mode setup
@@ -145,37 +188,6 @@ Configure auto-tangle so we don't have to manually tangle our init file
   (setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))
 
   (global-set-key (kbd "C-c n a") 'org-agenda)
-#+end_src
-** which-key-mode
-#+begin_src emacs-lisp
-  (which-key-mode)
-#+end_src
-** Show file path in title frame
-#+begin_src emacs-lisp
-  (setq frame-title-format
-        (list (format "%s %%S: %%j " (system-name))
-              '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
-#+end_src
-** y or n
-#+begin_src emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
-** scroll-conservatively
-Don't jump scroll at the bottom or top of the window
-#+begin_src emacs-lisp
-  (setq scroll-conservatively 101)
-#+end_src
-** help-window-select
-#+begin_src emacs-lisp
-  (setq help-window-select t)
-#+end_src
-** auto-save-visited-mode
-#+begin_src emacs-lisp
-  (auto-save-visited-mode 1)
-#+end_src
-** Disable lockfiles
-#+begin_src emacs-lisp
-  (setq create-lockfiles nil)
 #+end_src
 * Keybindings
 #+begin_src emacs-lisp
@@ -283,33 +295,33 @@ Disables the audio bell and sets up the visual bell
 #+begin_src emacs-lisp
   (use-package vterm
     :ensure t
-    :config
-    (setq vterm-max-scrollback 20000))
+    :preface
+    (defun multi-vterm ()
+      (interactive)
+      (let ((n 1)
+            name)
+        (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+          (setq n (1+ n)))
+        (vterm name)))
 
-  ;; This function effectively does what multi-vterm did without an extra package
-  (defun multi-vterm ()
-    (interactive)
-    (let ((n 1)
-  	name)
-      (while (get-buffer (setq name (format "*vterm*<%d>" n)))
-        (setq n (1+ n)))
-      (vterm name)))
+    (defun vterm-rename-buffer (name)
+      (interactive "sName? ")
+      (unless (eq major-mode 'vterm-mode)
+        (user-error "Not a vterm buffer"))
+      (rename-buffer (format "*vterm*<%s>" name)))
 
-  (defun vterm-rename-buffer (name)
-    (interactive "sName? ")
-    (if (eq major-mode 'vterm-mode)
-        (rename-buffer (format "*vterm*<%s>" name))
-      (error "Not a vterm buffer")))
+    :bind
+    (("C-c v n" . multi-vterm)
+     ("C-c v r" . vterm-rename-buffer))
 
-  (global-set-key (kbd "C-c v n") 'multi-vterm)
-  (global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+    :custom
+    (vterm-max-scrollback 20000))
 #+end_src
 ** Rainbow Parentheses
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :defer t)
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+    :defer t
+    :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 #+end_src
 ** diredfl
 #+begin_src emacs-lisp
@@ -341,6 +353,12 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
     :config
     (minions-mode 1))
 #+end_src
+** Vertico
+#+begin_src emacs-lisp
+  (use-package vertico
+    :init
+    (vertico-mode))
+#+end_src
 ** Marginalia
 #+begin_src emacs-lisp
   (use-package marginalia
@@ -349,7 +367,39 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
     :init
     (marginalia-mode))
 #+end_src
-** fido
+** Embark
 #+begin_src emacs-lisp
-  (fido-vertical-mode)
+  (use-package embark
+    :ensure t
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
+#+end_src
+** Orderless
+#+begin_src emacs-lisp
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion)))))
+#+end_src
+** sudo-edit
+#+begin_src emacs-lisp
+  (use-package sudo-edit
+    :defer t
+    :after embark
+    :bind
+    (:map embark-file-map
+  	("s" . sudo-edit-find-file))
+    (:map embark-become-file+buffer-map
+  	("s" . sudo-edit-find-file)))
 #+end_src

@@ -38,6 +38,32 @@
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
+(which-key-mode)
+
+(setq frame-title-format
+      (list (format "%s %%S: %%j " (system-name))
+            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(setq scroll-conservatively 101)
+
+(setq help-window-select t)
+
+(auto-save-visited-mode 1)
+
+(setq create-lockfiles nil)
+
+;; Disable backup and auto-save for TRAMP files
+(defun disable-tramp-backups ()
+  "Disable backups and auto-saves for TRAMP files."
+  (when (and buffer-file-name (file-remote-p buffer-file-name))
+    (setq-local make-backup-files nil)
+    (setq-local auto-save-default nil)
+    (setq-local create-lockfiles nil)))
+
+(add-hook 'find-file-hook #'disable-tramp-backups)
+
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-dir "~/Documents/org-files/"))
   (unless (file-exists-p org-dir)
@@ -114,22 +140,6 @@
 (setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))
 
 (global-set-key (kbd "C-c n a") 'org-agenda)
-
-(which-key-mode)
-
-(setq frame-title-format
-      (list (format "%s %%S: %%j " (system-name))
-            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
-
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(setq scroll-conservatively 101)
-
-(setq help-window-select t)
-
-(auto-save-visited-mode 1)
-
-(setq create-lockfiles nil)
 
 ;; Unbind compose-mail
 (unbind-key "C-x m")
@@ -215,31 +225,31 @@
 
 (use-package vterm
   :ensure t
-  :config
-  (setq vterm-max-scrollback 20000))
+  :preface
+  (defun multi-vterm ()
+    (interactive)
+    (let ((n 1)
+          name)
+      (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+        (setq n (1+ n)))
+      (vterm name)))
 
-;; This function effectively does what multi-vterm did without an extra package
-(defun multi-vterm ()
-  (interactive)
-  (let ((n 1)
-	name)
-    (while (get-buffer (setq name (format "*vterm*<%d>" n)))
-      (setq n (1+ n)))
-    (vterm name)))
+  (defun vterm-rename-buffer (name)
+    (interactive "sName? ")
+    (unless (eq major-mode 'vterm-mode)
+      (user-error "Not a vterm buffer"))
+    (rename-buffer (format "*vterm*<%s>" name)))
 
-(defun vterm-rename-buffer (name)
-  (interactive "sName? ")
-  (if (eq major-mode 'vterm-mode)
-      (rename-buffer (format "*vterm*<%s>" name))
-    (error "Not a vterm buffer")))
+  :bind
+  (("C-c v n" . multi-vterm)
+   ("C-c v r" . vterm-rename-buffer))
 
-(global-set-key (kbd "C-c v n") 'multi-vterm)
-(global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+  :custom
+  (vterm-max-scrollback 20000))
 
 (use-package rainbow-delimiters
-  :defer t)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+  :defer t
+  :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 
 (use-package diredfl
   :defer t
@@ -262,10 +272,42 @@
   :config
   (minions-mode 1))
 
+(use-package vertico
+  :init
+  (vertico-mode))
+
 (use-package marginalia
   :bind (:map minibuffer-local-map
 	      ("M-A" . marginalia-cycle))
   :init
   (marginalia-mode))
 
-(fido-vertical-mode)
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package sudo-edit
+  :defer t
+  :after embark
+  :bind
+  (:map embark-file-map
+	("s" . sudo-edit-find-file))
+  (:map embark-become-file+buffer-map
+	("s" . sudo-edit-find-file)))
