@@ -14,25 +14,43 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(scroll-bar-mode -1)   ; Disable visible scrollbar
-(tool-bar-mode -1)     ; Disable the toolbar
-(menu-bar-mode -1)     ; Disable the menu bar
-(set-fringe-mode 10)   ; Give some room on the sides
-(column-number-mode 1) ; Enable column numbers in mode-line
+(scroll-bar-mode -1)       ; Disable visible scrollbar
+(tool-bar-mode -1)         ; Disable the toolbar
+(menu-bar-mode -1)         ; Disable the menu bar
+(set-fringe-mode 10)       ; Give some room on the sides
+(column-number-mode 1)     ; Enable column numbers in mode-line
+(delete-selection-mode 1)  ; Allow for overwriting regions when yanking from kill-ring
+
+;; create the autosave dir if necessary, since emacs won't.
+(make-directory "~/.emacs.d/backups/" t)
+
+;; Put backup files (ie foo~) in ~/.emacs.d/.
+(setq backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
+
+;; Use copying to preserve symlinks
+(setq backup-by-copying t)
+
+;; Keep multiple versions
+(setq version-control t)
+(setq delete-old-versions t)
+(setq kept-new-versions 6)
+(setq kept-old-versions 2)
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-dir "~/Documents/org-files/"))
   (unless (file-exists-p org-dir)
     (make-directory org-dir t)))
 
-(defun my/org-mode-setup ()
+(defun org-mode-setup ()
   ; (org-indent-mode)
   (auto-fill-mode 1)
   (display-line-numbers-mode -1)
   (setq fill-column 100))
 
 (use-package org
-  :hook (org-mode . my/org-mode-setup))
+  :hook (org-mode . org-mode-setup))
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
@@ -78,8 +96,6 @@
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
 
-(setq org-roam-directory (file-truename "~/Documents/org-roam"))
-
 (defun org-roam-rg ()
   "Ripgrep search the org-roam directory"
   (interactive)
@@ -101,6 +117,18 @@
 
 (which-key-mode)
 
+(setq frame-title-format
+      (list (format "%s %%S: %%j " (system-name))
+            '(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(setq scroll-conservatively 0)
+
+(setq help-window-select t)
+
+(auto-save-visited-mode 1)
+
 ;; Unbind compose-mail
 (unbind-key "C-x m")
 
@@ -119,26 +147,35 @@
 ;; Set up split-line since I just overwrote it with ace-swap-window
 (global-set-key (kbd "C-x o") 'split-line)
 
-(defun my/visual-bell ()
+;; Keybinding used to call custom htop function
+(global-set-key (kbd "C-c v h") 'htop)
+
+(defun visual-bell ()
   (invert-face 'mode-line-active)
   (invert-face 'mode-line-inactive)
   (run-with-timer 0.1 nil #'invert-face 'mode-line-active)
   (run-with-timer 0.1 nil #'invert-face 'mode-line-inactive))
 
-(setq ring-bell-function #'my/visual-bell)
+(defun shutdown-computer ()
+  "Prompt the user to shutdown the computer using `shutdown now`."
+  (interactive)
+  (when (yes-or-no-p "Are you sure you want to shutdown the computer? ")
+    (shell-command "shutdown now")))
 
-;; ;; Dependency package for standard-themes
-;; (use-package modus-themes
-;;   :ensure t)
+(defun htop ()
+  "Open htop in a vterm buffer"
+  (interactive)
+  (require 'vterm)
 
-;; (use-package standard-themes
-;;   :ensure t
-;;   :init
-;;   (standard-themes-take-over-modus-themes-mode 1)
-;;   :config
-;;   (setq modus-themes-mixed-fonts t)
-;;   (setq modus-themes-italic-constructs t)
-;;   (modus-themes-load-theme 'standard-light-tinted))
+  (let ((buf (vterm "*htop*")))
+    (with-current-buffer buf
+      
+      ;; Clear any prompt and run htop
+      (vterm-send-string "exec htop")
+      (vterm-send-return))
+    buf))
+
+(setq ring-bell-function #'visual-bell)
 
 (use-package modus-themes
   :ensure t
@@ -150,7 +187,7 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title "EMACS")
-  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-startup-banner 2)
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
   (setq dashboard-items '((recents   . 5)
@@ -175,3 +212,55 @@
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 (use-package no-littering)
+
+(use-package vterm
+  :ensure t
+  :config
+  (setq vterm-max-scrollback 20000))
+
+(defun vterm-rename-buffer (name)
+  (interactive "sName? ")
+  (if (eq major-mode 'vterm-mode)
+      (rename-buffer (format "*vterm*<%s>" name))
+    (error "Not a vterm buffer")))
+
+(global-set-key (kbd "C-c v n") 'vterm)
+(global-set-key (kbd "C-c v r") 'vterm-rename-buffer)
+
+(use-package rainbow-delimiters
+  :defer t)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'org-mode-hook 'rainbow-delimiters-mode)
+
+(use-package diredfl
+  :defer t
+  :hook (dired-mode . diredfl-mode))
+
+(use-package vundo
+  :defer t
+  :bind
+  (:map global-map
+        ("C-x u" . vundo)))
+
+(use-package magit
+  :defer t)
+
+(use-package minions
+  :config
+  (minions-mode 1))
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+(use-package marginalia
+  :bind (:map minibuffer-local-map
+	      ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
