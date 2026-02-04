@@ -54,6 +54,17 @@
 
 (setq create-lockfiles nil)
 
+(savehist-mode 1)
+
+(recentf-mode 1)
+;; Saves the recent file list every five minutes
+(run-at-time nil (* 5 60) 'recentf-save-list)
+
+(setq dired-recursive-copies 'always)
+(setq dired-recursive-deletes 'always)
+(setq delete-by-moving-to-trash t)
+(setq dired-dwim-target t)
+
 ;; Disable backup and auto-save for TRAMP files
 (defun disable-tramp-backups ()
   "Disable backups and auto-saves for TRAMP files."
@@ -162,6 +173,16 @@
 ;; Keybinding used to call custom htop function
 (global-set-key (kbd "C-c v h") 'htop)
 
+;; Invert dired and list-directory bindings
+(global-set-key (kbd "C-x C-d") 'dired)
+(global-set-key (kbd "C-x d") 'list-directory)
+
+(defun sudo-shell-command (command)
+  (interactive "Command: ")
+  (with-temp-buffer
+    (cd "/sudo::/")
+    (async-shell-command command)))
+
 (defun visual-bell ()
   (invert-face 'mode-line-active)
   (invert-face 'mode-line-inactive)
@@ -173,6 +194,18 @@
   (interactive)
   (when (yes-or-no-p "Are you sure you want to shutdown the computer? ")
     (shell-command "shutdown now")))
+
+(defun mandb ()
+  "Prompt the user to update the mandb."
+  (interactive)
+  (when (yes-or-no-p "Update mandb? ")
+    (sudo-shell-command "mandb")))
+
+(defun updatedb ()
+  "Promt the user to update the locate database."
+  (interactive)
+  (when (yes-or-no-p "Update locate database? ")
+    (sudo-shell-command "updatedb")))
 
 (defun htop ()
   "Open htop in a vterm buffer"
@@ -202,8 +235,7 @@
   (setq dashboard-startup-banner 2)
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
-  (setq dashboard-items '((recents   . 5)
-			  (projects  . 5)
+  (setq dashboard-items '((projects  . 5)
 			  (agenda    . 5)
 			  (bookmarks . 5)
 			  (registers . 5)))
@@ -252,6 +284,25 @@
   :defer t
   :hook (dired-mode . diredfl-mode))
 
+(use-package dired-subtree
+  :ensure t
+  :after dired
+  :bind (:map dired-mode-map
+	      ("<tab>" . dired-subtree-toggle)
+	      ("TAB" . dired-subtree-toggle)
+	      ("<backtab>" . dired-subtree-remove)
+	      ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
+
+(use-package trashed
+  :ensure t
+  :commands (trashed)
+  :config
+  (setq trashed-use-header-line t)
+  (setq trashed-sort-key '("Date deleted" . t))
+  (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
+
 (use-package vundo
   :defer t
   :bind
@@ -283,8 +334,9 @@
   :ensure t
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+   :map minibuffer-local-map
+   ("C-c C-c" . embark-collect)
+   ("C-c C-e" . embark-export))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
@@ -295,9 +347,7 @@
                  (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  :ensure t)
 
 (use-package orderless
   :ensure t
@@ -307,56 +357,16 @@
 
 (use-package consult
   :ensure t
-  :bind (;; C-c bindings in `mode-specific-map'
-         ("C-c M-x" . consult-mode-command)
-         ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ([remap Info-search] . consult-info)
-         ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-         ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g r" . consult-grep-match)
-         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-         ("M-s c" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-         ("M-r" . consult-history)))               ;; orig. previous-matching-history-element
+  :bind (("C-x c g" . consult-ripgrep)
+	 ("C-x c G" . consult-git-grep)
+	 ("C-x c l" . consult-locate)
+	 ("C-x c f" . consult-find)
+	 ("C-x c r" . consult-recent-file)
+	 ("C-x c o" . consult-outline)
+	 ;; Overwrites default Emacs behavior
+	 ("C-x b" . consult-buffer)
+	 ("C-x p b" . consult-project-buffer)
+	 ("C-S-s" . consult-line)))
 
 (use-package sudo-edit
   :defer t
@@ -366,3 +376,46 @@
 	("s" . sudo-edit-find-file))
   (:map embark-become-file+buffer-map
 	("s" . sudo-edit-find-file)))
+
+(use-package wgrep
+  :ensure t
+  :bind
+  (:map grep-mode-map
+        ("e" . wgrep-change-to-wgrep-mode))
+  :config
+  ;; Finish edit ONLY with C-c C-c
+  (define-key wgrep-mode-map (kbd "C-c C-c") #'wgrep-finish-edit)
+  ;; Remove other default finish bindings
+  (define-key wgrep-mode-map (kbd "C-x C-s") nil)
+  (define-key wgrep-mode-map (kbd "C-c C-e") nil))
+
+(use-package corfu
+  :ensure t
+  :hook (after-init . global-corfu-mode)
+  :bind (:map corfu-map ("<tab>" . corfu-complete))
+  :config
+  (setq tab-always-indent 'complete)
+  (setq corfu-preview-current nil)
+  (setq corfu-min-width 20)
+
+  (setq corfu-popupinfo-delay '(1.25 . 0.5))
+  (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
+
+  ;; Sort by input history (no need to modify `corfu-sort-function').
+  (with-eval-after-load 'savehist
+    (corfu-history-mode 1)
+    (add-to-list 'savehist-additional-variables 'corfu-history)))
+
+(use-package multiple-cursors
+  :demand t
+  :bind
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C->" . mc/mark-next-like-this)
+   ("C-<" . mc/mark-previous-like-this)
+   ("C-;" . mc/mark-all-like-this)
+   ("C-\"" . mc/skip-to-next-like-this))
+  :config
+  (add-hook 'multiple-cursors-mode-hook
+            (lambda ()
+              (define-key mc/keymap (kbd "C-:")
+                #'mc/skip-to-previous-like-this))))
