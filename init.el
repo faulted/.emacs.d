@@ -232,6 +232,14 @@
   :config
   (load-theme 'doom-nord t))
 
+(set-face-attribute
+ 'mode-line nil
+ :box '(:line-width 1 :color "#999999"))
+
+(set-face-attribute
+ 'mode-line-inactive nil
+ :box '(:line-width 1 :color "#777777"))
+
 (use-package dashboard
   :ensure t
   :config
@@ -377,7 +385,7 @@
 	 ;; Overwrites default Emacs behavior
 	 ("C-x b" . consult-buffer)
 	 ("C-x p b" . consult-project-buffer)
-	 ("C-s" . consult-line)))
+	 ("C-S-s" . consult-line)))
 
 (use-package sudo-edit
   :defer t

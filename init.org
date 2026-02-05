@@ -300,7 +300,7 @@ Disables the audio bell and sets up the visual bell
 #+end_src
 * Packages
 ** Theme
-#+begin_src emacs-lisp :eval no
+#+begin_src emacs-lisp
   (use-package doom-themes
     :ensure t
     :custom
@@ -308,6 +308,14 @@ Disables the audio bell and sets up the visual bell
     (doom-themes-enable-italic t)
     :config
     (load-theme 'doom-nord t))
+
+  (set-face-attribute
+   'mode-line nil
+   :box '(:line-width 1 :color "#999999"))
+
+  (set-face-attribute
+   'mode-line-inactive nil
+   :box '(:line-width 1 :color "#777777"))
 #+end_src
 ** Emacs Dashboard
 #+begin_src emacs-lisp
@@ -485,7 +493,7 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
   	 ;; Overwrites default Emacs behavior
   	 ("C-x b" . consult-buffer)
   	 ("C-x p b" . consult-project-buffer)
-  	 ("C-s" . consult-line)))
+  	 ("C-S-s" . consult-line)))
 #+end_src
 ** sudo-edit
 #+begin_src emacs-lisp
