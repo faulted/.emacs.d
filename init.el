@@ -56,9 +56,11 @@
 
 (savehist-mode 1)
 
-(recentf-mode 1)
-;; Saves the recent file list every five minutes
-(run-at-time nil (* 5 60) 'recentf-save-list)
+;; (setq recentf-auto-cleanup nil)
+;; (setq recentf-max-saved-items 50)
+;; (recentf-mode 1)
+;; ;; Saves the recent file list every five minutes
+;; (run-at-time nil (* 5 60) 'recentf-save-list)
 
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)
@@ -222,10 +224,13 @@
 
 (setq ring-bell-function #'visual-bell)
 
-(use-package modus-themes
+(use-package doom-themes
   :ensure t
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-italic t)
   :config
-  (modus-themes-load-theme 'modus-vivendi))
+  (load-theme 'doom-nord t))
 
 (use-package dashboard
   :ensure t
@@ -235,7 +240,8 @@
   (setq dashboard-startup-banner 2)
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
-  (setq dashboard-items '((projects  . 5)
+  (setq dashboard-items '((recents . 5)
+			  (projects  . 5)
 			  (agenda    . 5)
 			  (bookmarks . 5)
 			  (registers . 5)))
@@ -316,6 +322,11 @@
 	("C-x m m" . magit)
 	("C-x m b" . magit-blame)))
 
+;; Set the default behavior of the Magit buffer to reuse the current window
+(setq display-buffer-alist
+    '(("magit:.**"
+       (display-buffer-reuse-window display-buffer-same-window))))
+
 (use-package minions
   :config
   (minions-mode 1))
@@ -366,7 +377,7 @@
 	 ;; Overwrites default Emacs behavior
 	 ("C-x b" . consult-buffer)
 	 ("C-x p b" . consult-project-buffer)
-	 ("C-S-s" . consult-line)))
+	 ("C-s" . consult-line)))
 
 (use-package sudo-edit
   :defer t
