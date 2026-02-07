@@ -170,10 +170,8 @@
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-S-z") 'undo-redo)
 
-;; Set up other-window and ace-window
+;; Set up other-window
 (global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-O") 'ace-window)
-(global-set-key (kbd "C-M-o") 'ace-swap-window)
 
 ;; Set up split-line since I just overwrote it with ace-swap-window
 (global-set-key (kbd "C-x o") 'split-line)
@@ -412,3 +410,9 @@
             (lambda ()
               (define-key mc/keymap (kbd "C-:")
                 #'mc/skip-to-previous-like-this))))
+
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "M-O") 'ace-window)
+  (global-set-key (kbd "C-M-o") 'ace-swap-window))
