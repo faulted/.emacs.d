@@ -14,12 +14,12 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(scroll-bar-mode -1)       ; Disable visible scrollbar
-(tool-bar-mode -1)         ; Disable the toolbar
-(menu-bar-mode -1)         ; Disable the menu bar
-(set-fringe-mode 10)       ; Give some room on the sides
-(column-number-mode 1)     ; Enable column numbers in mode-line
-(delete-selection-mode 1)  ; Allow for overwriting regions when yanking from kill-ring
+(scroll-bar-mode -1)            ; Disable visible scrollbar
+(tool-bar-mode -1)              ; Disable the toolbar
+(menu-bar-mode -1)              ; Disable the menu bar
+(column-number-mode 1)          ; Enable column numbers in mode-line
+(delete-selection-mode 1)       ; Allow for overwriting regions when yanking from kill-ring
+(setq inhibit-splash-screen t)  ; Disable splash screen
 
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/backups/" t)
@@ -56,11 +56,11 @@
 
 (savehist-mode 1)
 
-;; (setq recentf-auto-cleanup nil)
-;; (setq recentf-max-saved-items 50)
-;; (recentf-mode 1)
-;; ;; Saves the recent file list every five minutes
-;; (run-at-time nil (* 5 60) 'recentf-save-list)
+(setq recentf-auto-cleanup nil)
+(setq recentf-max-saved-items 50)
+(recentf-mode 1)
+;; Saves the recent file list every five minutes
+(run-at-time nil (* 5 60) 'recentf-save-list)
 
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)
@@ -76,6 +76,12 @@
     (setq-local create-lockfiles nil)))
 
 (add-hook 'find-file-hook #'disable-tramp-backups)
+
+(setq split-width-threshold 200)
+(setq split-height-threshold nil)
+
+;; (add-hook 'isearch-update-post-hook
+;; 	  (lambda () (when isearch-success (recenter))))
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-dir "~/Documents/org-files/"))
@@ -141,7 +147,7 @@
   (unless (boundp 'org-roam-directory)
     (error "org-roam-directory is not set"))
   (let ((default-directory org-roam-directory))
-    (counsel-rg nil org-roam-directory "-i" "Search org-roam (case insensitive): ")))
+    (consult-ripgrep org-roam-directory)))
 
 (global-set-key (kbd "C-c n r") #'org-roam-rg)
 
@@ -224,45 +230,11 @@
 
 (setq ring-bell-function #'visual-bell)
 
-(use-package doom-themes
-  :ensure t
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-italic t)
-  :config
-  (load-theme 'doom-nord t))
-
-(set-face-attribute
- 'mode-line nil
- :box '(:line-width 1 :color "#999999"))
-
-(set-face-attribute
- 'mode-line-inactive nil
- :box '(:line-width 1 :color "#777777"))
-
-(use-package dashboard
+(setq custom-safe-themes t)
+(use-package color-theme-sanityinc-tomorrow
   :ensure t
   :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title nil)
-  (setq dashboard-startup-banner 2)
-  (setq dashboard-center-content t)
-  (setq dashboard-vertically-center-content t)
-  (setq dashboard-items '((recents . 5)
-			  (projects  . 5)
-			  (agenda    . 5)
-			  (bookmarks . 5)
-			  (registers . 5)))
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
-  (setq dashboard-item-names '(("Agenda for the coming week:" . "Agenda:")))
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (run-at-time 0.1 nil
-			   (lambda ()
-                             (when (eq major-mode 'dashboard-mode)
-                               (revert-buffer :ignore-auto :noconfirm)))))))
+  (load-theme 'sanityinc-tomorrow-night t))
 
 (use-package no-littering)
 
@@ -385,7 +357,9 @@
 	 ;; Overwrites default Emacs behavior
 	 ("C-x b" . consult-buffer)
 	 ("C-x p b" . consult-project-buffer)
-	 ("C-S-s" . consult-line)))
+	 ("C-S-s" . consult-line))
+  :config
+  (setq consult-line-start-from-top t))
 
 (use-package sudo-edit
   :defer t
