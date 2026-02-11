@@ -33,6 +33,11 @@ Common configurations for built-in packages
   (delete-selection-mode 1)       ; Allow for overwriting regions when yanking from kill-ring
   (setq inhibit-splash-screen t)  ; Disable splash screen
 #+end_src
+** indent-tabs-mode
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil
+  	      tab-width 4)
+#+end_src
 ** Organize backup files
 #+begin_src emacs-lisp
   ;; create the autosave dir if necessary, since emacs won't.
@@ -122,12 +127,6 @@ Prefer vertical splits when automatically splitting
 #+begin_src emacs-lisp
   (setq split-width-threshold 200)
   (setq split-height-threshold nil)
-#+end_src
-** isearch
-Centers the screen on isearch results, not sure if I like this or not
-#+begin_src emacs-lisp
-  ;; (add-hook 'isearch-update-post-hook
-  ;; 	  (lambda () (when isearch-success (recenter))))
 #+end_src
 ** Org-Mode
 org-mode related packages and settings
@@ -245,6 +244,10 @@ Configure auto-tangle so we don't have to manually tangle our init file
   ;; Invert dired and list-directory bindings
   (global-set-key (kbd "C-x C-d") 'dired)
   (global-set-key (kbd "C-x d") 'list-directory)
+
+  ;; Set wdired-change-to-wdired-mode
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode))
 #+end_src
 * Custom functions
 ** Definitons

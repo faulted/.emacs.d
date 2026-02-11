@@ -21,6 +21,9 @@
 (delete-selection-mode 1)       ; Allow for overwriting regions when yanking from kill-ring
 (setq inhibit-splash-screen t)  ; Disable splash screen
 
+(setq-default indent-tabs-mode nil
+	      tab-width 4)
+
 ;; create the autosave dir if necessary, since emacs won't.
 (make-directory "~/.emacs.d/backups/" t)
 
@@ -79,9 +82,6 @@
 
 (setq split-width-threshold 200)
 (setq split-height-threshold nil)
-
-;; (add-hook 'isearch-update-post-hook
-;; 	  (lambda () (when isearch-success (recenter))))
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-dir "~/Documents/org-files/"))
@@ -182,6 +182,10 @@
 ;; Invert dired and list-directory bindings
 (global-set-key (kbd "C-x C-d") 'dired)
 (global-set-key (kbd "C-x d") 'list-directory)
+
+;; Set wdired-change-to-wdired-mode
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode))
 
 (defun sudo-shell-command (command)
   (interactive "Command: ")
