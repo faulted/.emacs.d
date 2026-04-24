@@ -15,24 +15,6 @@
     (load-theme 'sanityinc-tomorrow-night t))
 #+end_src
 
-** evil / evil collection
-#+begin_src emacs-lisp
-  (use-package evil
-    :ensure t
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-undo-system 'undo-redo)
-    :config
-    (evil-mode 1))
-
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :config
-    (evil-collection-init))
-#+end_src
-
 ** no-littering
 #+begin_src emacs-lisp
   (use-package no-littering)
