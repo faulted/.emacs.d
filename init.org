@@ -109,6 +109,7 @@ This removes the # autosave files
   (setq dired-recursive-deletes 'always)
   (setq delete-by-moving-to-trash t)
   (setq dired-dwim-target t)
+  (setq dired-listing-switches "-alh")
 #+end_src
 ** TRAMP
 #+begin_src emacs-lisp
@@ -161,6 +162,7 @@ Configure auto-tangle so we don't have to manually tangle our init file
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 #+end_src
 *** org-roam
 #+begin_src emacs-lisp
@@ -519,6 +521,21 @@ Lets us edit the results of a grep search while inside a grep-mode buffer
       (corfu-history-mode 1)
       (add-to-list 'savehist-additional-variables 'corfu-history)))
 #+end_src
+** dabbrev
+Set up to be used with corfu
+#+begin_src emacs-lisp
+  ;; Use Dabbrev with Corfu!
+  (use-package dabbrev
+    ;; Swap M-/ and C-M-/
+    :bind (("M-/" . dabbrev-completion)
+           ("C-M-/" . dabbrev-expand))
+    :config
+    (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+    (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
+#+end_src
 ** multiple-cursors
 #+begin_src emacs-lisp
   (use-package multiple-cursors
@@ -542,4 +559,16 @@ Lets us edit the results of a grep search while inside a grep-mode buffer
     :config
     (global-set-key (kbd "M-O") 'ace-window)
     (global-set-key (kbd "C-M-o") 'ace-swap-window))
+#+end_src
+** rust-mode
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :config
+    (add-hook 'rust-mode-hook 'eglot-ensure)
+    (with-eval-after-load 'eglot
+      (add-to-list 'eglot-server-programs
+                   '((rust-ts-mode rust-mode) .
+                     ("rust-analyzer" :initializationOptions (:check (:command "clippy"))))))
+    (setq rust-format-on-save t))
 #+end_src

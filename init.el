@@ -69,6 +69,7 @@
 (setq dired-recursive-deletes 'always)
 (setq delete-by-moving-to-trash t)
 (setq dired-dwim-target t)
+(setq dired-listing-switches "-alh")
 
 ;; Disable backup and auto-save for TRAMP files
 (defun disable-tramp-backups ()
@@ -107,6 +108,7 @@
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-roam-dir "~/Documents/org-roam/"))
@@ -401,6 +403,18 @@
     (corfu-history-mode 1)
     (add-to-list 'savehist-additional-variables 'corfu-history)))
 
+;; Use Dabbrev with Corfu!
+(use-package dabbrev
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  :config
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
+
 (use-package multiple-cursors
   :demand t
   :bind
@@ -420,3 +434,13 @@
   :config
   (global-set-key (kbd "M-O") 'ace-window)
   (global-set-key (kbd "C-M-o") 'ace-swap-window))
+
+(use-package rust-mode
+  :ensure t
+  :config
+  (add-hook 'rust-mode-hook 'eglot-ensure)
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((rust-ts-mode rust-mode) .
+                   ("rust-analyzer" :initializationOptions (:check (:command "clippy"))))))
+  (setq rust-format-on-save t))
