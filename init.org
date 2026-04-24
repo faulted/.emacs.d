@@ -171,11 +171,10 @@ Prefer vertical splits when automatically splitting
 ** Fix trailing whitespace after git branch
 #+begin_src emacs-lisp
   (advice-add 'vc-mode-line :after
-            (lambda (&rest _)
-              (when (stringp vc-mode)
-                (setq vc-mode (concat vc-mode " ")))))
+              (lambda (&rest _)
+                (when (stringp vc-mode)
+                  (setq vc-mode (concat vc-mode " ")))))
 #+end_src
-
 * Load files
 
 ** Add init-files directory to load-path

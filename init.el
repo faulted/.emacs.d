@@ -98,9 +98,9 @@
 (setq ring-bell-function #'visual-bell)
 
 (advice-add 'vc-mode-line :after
-          (lambda (&rest _)
-            (when (stringp vc-mode)
-              (setq vc-mode (concat vc-mode " ")))))
+            (lambda (&rest _)
+              (when (stringp vc-mode)
+                (setq vc-mode (concat vc-mode " ")))))
 
 (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 
