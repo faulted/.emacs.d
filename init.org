@@ -175,6 +175,17 @@ Prefer vertical splits when automatically splitting
                 (when (stringp vc-mode)
                   (setq vc-mode (concat vc-mode " ")))))
 #+end_src
+
+** Remove 'Git-' from vc-mode in the mode-line
+#+begin_src emacs-lisp
+  (defadvice vc-mode-line (after strip-backend () activate)
+    (when (stringp vc-mode)
+      (let ((noback (replace-regexp-in-string 
+                     (format "^ %s\\W" (vc-backend buffer-file-name))
+                     " " vc-mode)))
+        (setq vc-mode noback))))
+#+end_src
+
 * Load files
 
 ** Add init-files directory to load-path

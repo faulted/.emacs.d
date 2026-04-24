@@ -102,6 +102,13 @@
               (when (stringp vc-mode)
                 (setq vc-mode (concat vc-mode " ")))))
 
+(defadvice vc-mode-line (after strip-backend () activate)
+  (when (stringp vc-mode)
+    (let ((noback (replace-regexp-in-string 
+                   (format "^ %s\\W" (vc-backend buffer-file-name))
+                   " " vc-mode)))
+      (setq vc-mode noback))))
+
 (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 
 (require 'keybindings)
