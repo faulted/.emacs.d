@@ -6,6 +6,7 @@
 
 * Base configuration
 Common configurations for built-in packages
+
 ** Initialize package sources and use-package
 #+begin_src emacs-lisp
   ;; Initialize package sources
@@ -24,6 +25,7 @@ Common configurations for built-in packages
   (require 'use-package)
   (setq use-package-always-ensure t)
 #+end_src
+
 ** Disable / configure default window elements
 #+begin_src emacs-lisp
   (scroll-bar-mode -1)            ; Disable visible scrollbar
@@ -33,11 +35,13 @@ Common configurations for built-in packages
   (delete-selection-mode 1)       ; Allow for overwriting regions when yanking from kill-ring
   (setq inhibit-splash-screen t)  ; Disable splash screen
 #+end_src
+
 ** indent-tabs-mode
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil
   	          tab-width 4)
 #+end_src
+
 ** Organize backup files
 #+begin_src emacs-lisp
   ;; create the backup dir if necessary, since emacs won't.
@@ -55,6 +59,7 @@ Common configurations for built-in packages
   (setq kept-new-versions 6)
   (setq kept-old-versions 2)
 #+end_src
+
 ** Organize autosave files
 #+begin_src emacs-lisp
   ;; create the backup dir if necessary, since emacs won't.
@@ -63,41 +68,51 @@ Common configurations for built-in packages
         '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
           (".*" "~/.emacs.d/autosaves/" t)))
 #+end_src
+
 ** display relative line numbers
 #+begin_src emacs-lisp
-  (setq display-line-numbers 'relative)
-  (global-display-line-numbers-mode)
+  (global-display-line-numbers-mode 1)
+  (add-hook 'display-line-numbers-mode-hook
+            (lambda () (setq display-line-numbers 'relative)))
 #+end_src
+
 ** which-key-mode
 #+begin_src emacs-lisp
   (which-key-mode)
 #+end_src
+
 ** Show file path in title frame
 #+begin_src emacs-lisp
   (setq frame-title-format
         '(buffer-file-name "%f" (dired-directory dired-directory "%b")))
 #+end_src
+
 ** y or n
 #+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
+
 ** scroll-conservatively
 Don't jump scroll at the bottom or top of the window
 #+begin_src emacs-lisp
   (setq scroll-conservatively 101)
 #+end_src
+
 ** help-window-select
 #+begin_src emacs-lisp
   (setq help-window-select t)
 #+end_src
+
 ** Disable lockfiles
 #+begin_src emacs-lisp
   (setq create-lockfiles nil)
 #+end_src
+
 ** savehist
 #+begin_src emacs-lisp
   (savehist-mode 1)
 #+end_src
+
 ** recentf
 #+begin_src emacs-lisp
   (setq recentf-auto-cleanup nil)
@@ -106,6 +121,7 @@ Don't jump scroll at the bottom or top of the window
   ;; Saves the recent file list every five minutes
   (run-at-time nil (* 5 60) 'recentf-save-list)
 #+end_src
+
 ** dired
 #+begin_src emacs-lisp
   (setq dired-recursive-copies 'always)
@@ -114,6 +130,7 @@ Don't jump scroll at the bottom or top of the window
   (setq dired-dwim-target t)
   (setq dired-listing-switches "-alh")
 #+end_src
+
 ** TRAMP
 #+begin_src emacs-lisp
   ;; Disable backup and auto-save for TRAMP files
@@ -126,22 +143,46 @@ Don't jump scroll at the bottom or top of the window
 
   (add-hook 'find-file-hook #'disable-tramp-backups)
 #+end_src
+
 ** Window splitting preferences
 Prefer vertical splits when automatically splitting
 #+begin_src emacs-lisp
   (setq split-width-threshold 200)
   (setq split-height-threshold nil)
 #+end_src
-* Function calls
+
+** Add total line count to modeline
+#+begin_src emacs-lisp
+  (setq mode-line-position
+        '(("(%l" (:eval (get-buffer-line-count)) ",%c) ")))
+#+end_src
+
+** Remove extra whitespace padding after buffer name
+#+begin_src emacs-lisp
+  (setq-default mode-line-buffer-identification
+                (propertized-buffer-identification "%b"))
+#+end_src
+
 ** Set the visual bell to flash the mode line
 #+begin_src emacs-lisp
   (setq ring-bell-function #'visual-bell)
 #+end_src
+
+** Fix trailing whitespace after git branch
+#+begin_src emacs-lisp
+  (advice-add 'vc-mode-line :after
+            (lambda (&rest _)
+              (when (stringp vc-mode)
+                (setq vc-mode (concat vc-mode " ")))))
+#+end_src
+
 * Load files
+
 ** Add init-files directory to load-path
 #+begin_src emacs-lisp
   (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 #+end_src
+
 ** Require individual files
 #+begin_src emacs-lisp
   (require 'keybindings)

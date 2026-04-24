@@ -6,6 +6,7 @@
 
 * Org-Mode
 org-mode related packages and settings
+
 ** org-mode setup
 #+begin_src emacs-lisp
   ;; Create ~/Documents/org-files/ directory if it doesn't exist
@@ -16,7 +17,6 @@ org-mode related packages and settings
   (defun org-mode-setup ()
     ; (org-indent-mode)
     (auto-fill-mode 1)
-    (display-line-numbers-mode -1)
     (setq fill-column 100))
 
   (use-package org
@@ -25,6 +25,7 @@ org-mode related packages and settings
   ;; Make sure org-indent face is available
   (require 'org-indent)
 #+end_src
+
 ** org-mode auto-tangle
 Configure auto-tangle so we don't have to manually tangle our init file
 #+begin_src emacs-lisp
@@ -32,6 +33,7 @@ Configure auto-tangle so we don't have to manually tangle our init file
     :defer t
     :hook (org-mode . org-auto-tangle-mode))
 #+end_src
+
 ** org-mode structure templates
 #+begin_src emacs-lisp
   (require 'org-tempo)
@@ -39,6 +41,7 @@ Configure auto-tangle so we don't have to manually tangle our init file
   (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 #+end_src
+
 ** org-roam
 #+begin_src emacs-lisp
   ;; Create ~/Documents/org-files/ directory if it doesn't exist
@@ -84,12 +87,14 @@ Configure auto-tangle so we don't have to manually tangle our init file
 
   (global-set-key (kbd "C-c n r") #'org-roam-rg)
 #+end_src
+
 ** org-mode font-lock
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook
             (lambda ()
               (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
 #+end_src
+
 ** org-agenda
 #+begin_src emacs-lisp
   (make-directory "~/Documents/org-agenda/" t)
@@ -97,6 +102,12 @@ Configure auto-tangle so we don't have to manually tangle our init file
 
   (global-set-key (kbd "C-c n a") 'org-agenda)
 #+end_src
+
+** Always insert blank lines before headings
+#+begin_src emacs-lisp
+  (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'org-mode)

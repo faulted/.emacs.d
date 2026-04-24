@@ -5,6 +5,7 @@
 #+auto_tangle: t
 
 * Language modes
+
 ** rust-mode
 #+begin_src emacs-lisp
   (use-package rust-mode
@@ -17,6 +18,7 @@
                      ("rust-analyzer" :initializationOptions (:check (:command "clippy"))))))
     (setq rust-format-on-save t))
 #+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'language-modes)

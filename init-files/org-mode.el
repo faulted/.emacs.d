@@ -6,7 +6,6 @@
 (defun org-mode-setup ()
   ; (org-indent-mode)
   (auto-fill-mode 1)
-  (display-line-numbers-mode -1)
   (setq fill-column 100))
 
 (use-package org
@@ -75,5 +74,7 @@
 (setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))
 
 (global-set-key (kbd "C-c n a") 'org-agenda)
+
+(setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
 
 (provide 'org-mode)

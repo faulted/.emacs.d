@@ -5,6 +5,7 @@
 #+auto_tangle: t
 
 * Set all frames to be maximized on creation
+
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src

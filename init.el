@@ -45,8 +45,9 @@
       '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
         (".*" "~/.emacs.d/autosaves/" t)))
 
-(setq display-line-numbers 'relative)
-(global-display-line-numbers-mode)
+(global-display-line-numbers-mode 1)
+(add-hook 'display-line-numbers-mode-hook
+          (lambda () (setq display-line-numbers 'relative)))
 
 (which-key-mode)
 
@@ -88,7 +89,18 @@
 (setq split-width-threshold 200)
 (setq split-height-threshold nil)
 
+(setq mode-line-position
+      '(("(%l" (:eval (get-buffer-line-count)) ",%c) ")))
+
+(setq-default mode-line-buffer-identification
+              (propertized-buffer-identification "%b"))
+
 (setq ring-bell-function #'visual-bell)
+
+(advice-add 'vc-mode-line :after
+          (lambda (&rest _)
+            (when (stringp vc-mode)
+              (setq vc-mode (concat vc-mode " ")))))
 
 (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 

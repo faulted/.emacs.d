@@ -5,6 +5,7 @@
 #+auto_tangle: t
 
 * Functions
+
 ** Visual bell
 Disables the audio bell and sets up the visual bell
 #+begin_src emacs-lisp
@@ -14,7 +15,15 @@ Disables the audio bell and sets up the visual bell
     (run-with-timer 0.1 nil #'invert-face 'mode-line-active)
     (run-with-timer 0.1 nil #'invert-face 'mode-line-inactive))
 #+end_src
+
+** Get total buffer line count 
+#+begin_src emacs-lisp
+  (defun get-buffer-line-count ()
+    (format "/%d" (count-lines (point-min) (point-max))))
+#+end_src
+
 * Interactive functions
+
 ** sudo-shell-command
 #+begin_src emacs-lisp
   (defun sudo-shell-command (command)
@@ -23,6 +32,7 @@ Disables the audio bell and sets up the visual bell
       (cd "/sudo::/")
       (async-shell-command command)))
 #+end_src
+
 ** Shutdown computer function
 #+begin_src emacs-lisp
   (defun shutdown-computer ()
@@ -31,6 +41,7 @@ Disables the audio bell and sets up the visual bell
     (when (yes-or-no-p "Are you sure you want to shutdown the computer? ")
       (shell-command "shutdown now")))
 #+end_src
+
 ** Update mandb function
 #+begin_src emacs-lisp
   (defun mandb ()
@@ -39,6 +50,7 @@ Disables the audio bell and sets up the visual bell
     (when (yes-or-no-p "Update mandb? ")
       (sudo-shell-command "mandb")))
 #+end_src
+
 ** Update locatedb function
 #+begin_src emacs-lisp
   (defun updatedb ()
@@ -47,6 +59,7 @@ Disables the audio bell and sets up the visual bell
     (when (yes-or-no-p "Update locate database? ")
       (sudo-shell-command "updatedb")))
 #+end_src
+
 ** htop
 #+begin_src emacs-lisp
   (defun htop ()
@@ -62,6 +75,46 @@ Disables the audio bell and sets up the visual bell
         (vterm-send-return))
       buf))
 #+end_src
+
+** Describe active modes in minibuffer
+#+begin_src emacs-lisp
+  (defun describe-active-modes-minibuffer ()
+    "Select and describe an active mode using the minibuffer (works with Vertico)."
+    (interactive)
+    (let* ((major (symbol-name major-mode))
+           (minors (mapcar #'symbol-name local-minor-modes))
+           (global-minors (mapcar #'symbol-name
+                                  (seq-filter (lambda (m)
+                                                (and (boundp m) (symbol-value m)))
+                                              global-minor-modes)))
+           ;; Annotate major mode so it's visually distinct in the list
+           (candidates
+            (append
+             (list (propertize major 'display
+                               (concat (propertize "[major] " 'face '(:foreground "cyan" :weight bold))
+                                       major)))
+             (mapcar (lambda (m)
+                       (propertize m 'display
+                                   (concat (propertize "[minor] " 'face '(:foreground "yellow"))
+                                           m)))
+                     (seq-uniq (append minors global-minors)))))
+           (chosen (completing-read "Active modes: " candidates nil t)))
+      (when chosen
+        (let ((sym (intern chosen)))
+          (describe-function sym)))))
+
+  (defun describe-active-modes--keymap-action (mode-name)
+    "Describe the keymap for MODE-NAME if one exists."
+    (let ((map-sym (intern (concat mode-name "-map"))))
+      (if (and (boundp map-sym) (keymapp (symbol-value map-sym)))
+          (describe-keymap map-sym)
+        (message "No keymap found for %s" mode-name))))
+
+  ;; Wire up an Embark action so you can hit your embark key on any candidate
+  (with-eval-after-load 'embark
+    (define-key embark-general-map (kbd "K") #'describe-active-modes--keymap-action))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'functions)

@@ -5,6 +5,7 @@
 #+auto_tangle: t
 
 * Packages
+
 ** Theme
 #+begin_src emacs-lisp
   (setq custom-safe-themes t)
@@ -13,6 +14,7 @@
     :config
     (load-theme 'sanityinc-tomorrow-night t))
 #+end_src
+
 ** evil / evil collection
 #+begin_src emacs-lisp
   (use-package evil
@@ -30,10 +32,12 @@
     :config
     (evil-collection-init))
 #+end_src
+
 ** no-littering
 #+begin_src emacs-lisp
   (use-package no-littering)
 #+end_src
+
 ** vterm
 #+begin_src emacs-lisp
   (use-package vterm
@@ -56,18 +60,21 @@
     :custom
     (vterm-max-scrollback 20000))
 #+end_src
+
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :defer t
     :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 #+end_src
+
 ** diredfl
 #+begin_src emacs-lisp
   (use-package diredfl
     :defer t
     :hook (dired-mode . diredfl-mode))
 #+end_src
+
 ** dired-subtree
 #+begin_src emacs-lisp
   (use-package dired-subtree
@@ -76,6 +83,7 @@
     :config
     (setq dired-subtree-use-backgrounds nil))
 #+end_src
+
 ** trashed
 #+begin_src emacs-lisp
   (use-package trashed
@@ -86,12 +94,14 @@
     (setq trashed-sort-key '("Date deleted" . t))
     (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 #+end_src
+
 ** vundo
 Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vundo tree.
 #+begin_src emacs-lisp
   (use-package vundo
     :defer t)
 #+end_src
+
 ** magit
 #+begin_src emacs-lisp
   (use-package magit
@@ -102,24 +112,28 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
       '(("magit:.**"
          (display-buffer-reuse-window display-buffer-same-window))))
 #+end_src
+
 ** minions
 #+begin_src emacs-lisp
   (use-package minions
     :config
     (minions-mode 1))
 #+end_src
+
 ** vertico
 #+begin_src emacs-lisp
   (use-package vertico
     :init
     (vertico-mode))
 #+end_src
+
 ** marginalia
 #+begin_src emacs-lisp
   (use-package marginalia
     :init
     (marginalia-mode))
 #+end_src
+
 ** embark
 #+begin_src emacs-lisp
   (use-package embark
@@ -136,6 +150,7 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
   (use-package embark-consult
     :ensure t)
 #+end_src
+
 ** orderless
 #+begin_src emacs-lisp
   (use-package orderless
@@ -144,6 +159,7 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
+
 ** consult
 #+begin_src emacs-lisp
   (use-package consult
@@ -151,18 +167,21 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
     :config
     (setq consult-line-start-from-top t))
 #+end_src
+
 ** sudo-edit
 #+begin_src emacs-lisp
   (use-package sudo-edit
     :defer t
     :after embark)
 #+end_src
+
 ** wgrep
 Lets us edit the results of a grep search while inside a grep-mode buffer
 #+begin_src emacs-lisp
   (use-package wgrep
     :ensure t)
 #+end_src
+
 ** corfu
 #+begin_src emacs-lisp
   (use-package corfu
@@ -181,6 +200,7 @@ Lets us edit the results of a grep search while inside a grep-mode buffer
       (corfu-history-mode 1)
       (add-to-list 'savehist-additional-variables 'corfu-history)))
 #+end_src
+
 ** dabbrev
 Set up to be used with corfu
 #+begin_src emacs-lisp
@@ -193,16 +213,19 @@ Set up to be used with corfu
     (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
     (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
 #+end_src
+
 ** multiple-cursors
 #+begin_src emacs-lisp
   (use-package multiple-cursors
     :demand t)
 #+end_src
+
 ** ace-window
 #+begin_src emacs-lisp
   (use-package ace-window
     :ensure t)
 #+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'packages)
