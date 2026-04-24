@@ -1,0 +1,23 @@
+#+TITLE: language-modes.org - 2026
+#+AUTHOR: Chris
+#+STARTUP: showeverything
+#+PROPERTY: header-args :tangle "~/.emacs.d/init-files/language-modes.el"
+#+auto_tangle: t
+
+* Language modes
+** rust-mode
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :config
+    (add-hook 'rust-mode-hook 'eglot-ensure)
+    (with-eval-after-load 'eglot
+      (add-to-list 'eglot-server-programs
+                   '((rust-ts-mode rust-mode) .
+                     ("rust-analyzer" :initializationOptions (:check (:command "clippy"))))))
+    (setq rust-format-on-save t))
+#+end_src
+* Initialize
+#+begin_src emacs-lisp
+  (provide 'language-modes)
+#+end_src
