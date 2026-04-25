@@ -54,10 +54,12 @@
   (global-set-key (kbd "C-x c g") 'consult-ripgrep)
   (global-set-key (kbd "C-x c G") 'consult-git-grep)
   (global-set-key (kbd "C-x c l") 'consult-locate)
-  (global-set-key (kbd "C-x c f") 'consult-find)
+  (global-set-key (kbd "C-x c f") 'consult-fd)
   (global-set-key (kbd "C-x c r") 'consult-recent-file)
   (global-set-key (kbd "C-x c o") 'consult-outline)
-  ;; Overwrites default Emacs behavior
+  (global-set-key (kbd "C-x c m") 'consult-man))
+
+(with-eval-after-load 'consult
   (global-set-key (kbd "C-x b") 'consult-buffer)
   (global-set-key (kbd "C-x p b") 'consult-project-buffer)
   (global-set-key (kbd "C-S-s") 'consult-line))
@@ -97,7 +99,8 @@
   (global-set-key (kbd "C-M-o") 'ace-swap-window))
 
 (with-eval-after-load 'avy
-  (global-set-key (kbd "C-'") 'avy-goto-char)
-  (global-set-key (kbd "M-'") 'avy-goto-char-timer))
+  (with-eval-after-load 'org
+    (global-set-key (kbd "C-'") 'avy-goto-char)
+    (global-set-key (kbd "M-'") 'avy-goto-char-timer)))
 
 (provide 'keybindings)

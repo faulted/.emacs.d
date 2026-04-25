@@ -54,10 +54,11 @@
 (use-package magit
   :defer t)
 
-;; Set the default behavior of the Magit buffer to reuse the current window
 (setq display-buffer-alist
-    '(("magit:.**"
-       (display-buffer-reuse-window display-buffer-same-window))))
+      '(("magit:.**"
+         (display-buffer-reuse-window display-buffer-same-window))))
+
+(add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
 
 (use-package minions
   :config

@@ -65,7 +65,8 @@
 
 (setq create-lockfiles nil)
 
-(savehist-mode 1)
+(with-eval-after-load 'no-littering
+  (savehist-mode 1))
 
 (with-eval-after-load 'no-littering
   (setq recentf-auto-cleanup 'never)

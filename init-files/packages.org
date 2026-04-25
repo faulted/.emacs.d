@@ -85,14 +85,23 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
 #+end_src
 
 ** magit
+
+*** Enable magit
 #+begin_src emacs-lisp
   (use-package magit
     :defer t)
+#+end_src
 
-  ;; Set the default behavior of the Magit buffer to reuse the current window
+*** Set the default behavior of the Magit buffer to reuse the current window
+#+begin_src emacs-lisp
   (setq display-buffer-alist
-      '(("magit:.**"
-         (display-buffer-reuse-window display-buffer-same-window))))
+        '(("magit:.**"
+           (display-buffer-reuse-window display-buffer-same-window))))
+#+end_src
+
+*** Add magit as an option to project.el
+#+begin_src emacs-lisp
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
 #+end_src
 
 ** minions

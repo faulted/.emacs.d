@@ -8,7 +8,7 @@
 Central location for all keybindings to be set at
 
 ** Built-in keybindings
-Keybindings that override built-in Emacs functionality
+Keybindings that overwrite built-in Emacs functionality
 #+begin_src emacs-lisp
   ;; Unbind compose-mail
   (unbind-key "C-x m")
@@ -82,15 +82,22 @@ Keybindings that override built-in Emacs functionality
 #+end_src
 
 ** consult
+
+*** consult specific bindings
 #+begin_src emacs-lisp
   (with-eval-after-load 'consult
     (global-set-key (kbd "C-x c g") 'consult-ripgrep)
     (global-set-key (kbd "C-x c G") 'consult-git-grep)
     (global-set-key (kbd "C-x c l") 'consult-locate)
-    (global-set-key (kbd "C-x c f") 'consult-find)
+    (global-set-key (kbd "C-x c f") 'consult-fd)
     (global-set-key (kbd "C-x c r") 'consult-recent-file)
     (global-set-key (kbd "C-x c o") 'consult-outline)
-    ;; Overwrites default Emacs behavior
+    (global-set-key (kbd "C-x c m") 'consult-man))
+#+end_src
+
+*** Overwrites default Emacs behavior
+#+begin_src emacs-lisp
+  (with-eval-after-load 'consult
     (global-set-key (kbd "C-x b") 'consult-buffer)
     (global-set-key (kbd "C-x p b") 'consult-project-buffer)
     (global-set-key (kbd "C-S-s") 'consult-line))
@@ -151,9 +158,10 @@ Keybindings that override built-in Emacs functionality
 ** avy
 avy is installed as a dependency of ace-window, so we just need to set up keybindings
 #+begin_src emacs-lisp
-  (with-eval-after-load 'avy
+(with-eval-after-load 'avy
+  (with-eval-after-load 'org
     (global-set-key (kbd "C-'") 'avy-goto-char)
-    (global-set-key (kbd "M-'") 'avy-goto-char-timer))
+    (global-set-key (kbd "M-'") 'avy-goto-char-timer)))
 #+end_src
 
 * Initialize
