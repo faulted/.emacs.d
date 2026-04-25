@@ -140,6 +140,26 @@ Disables the audio bell and sets up the visual bell
     (define-key embark-general-map (kbd "K") #'describe-active-modes--keymap-action))
 #+end_src
 
+** multi-vterm
+#+begin_src emacs-lisp
+    (defun multi-vterm ()
+      (interactive)
+      (let ((n 1)
+            name)
+        (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+          (setq n (1+ n)))
+        (vterm name)))
+#+end_src
+
+** vterm-rename-buffer
+#+begin_src emacs-lisp
+  (defun vterm-rename-buffer (name)
+    (interactive "sName? ")
+    (unless (eq major-mode 'vterm-mode)
+      (user-error "Not a vterm buffer"))
+    (rename-buffer (format "*vterm*<%s>" name)))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'functions)

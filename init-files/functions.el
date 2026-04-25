@@ -99,4 +99,18 @@
 (with-eval-after-load 'embark
   (define-key embark-general-map (kbd "K") #'describe-active-modes--keymap-action))
 
+(defun multi-vterm ()
+  (interactive)
+  (let ((n 1)
+        name)
+    (while (get-buffer (setq name (format "*vterm*<%d>" n)))
+      (setq n (1+ n)))
+    (vterm name)))
+
+(defun vterm-rename-buffer (name)
+  (interactive "sName? ")
+  (unless (eq major-mode 'vterm-mode)
+    (user-error "Not a vterm buffer"))
+  (rename-buffer (format "*vterm*<%s>" name)))
+
 (provide 'functions)
