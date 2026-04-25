@@ -158,10 +158,11 @@ Keybindings that overwrite built-in Emacs functionality
 ** avy
 avy is installed as a dependency of ace-window, so we just need to set up keybindings
 #+begin_src emacs-lisp
-(with-eval-after-load 'avy
-  (with-eval-after-load 'org
-    (global-set-key (kbd "C-'") 'avy-goto-char)
-    (global-set-key (kbd "M-'") 'avy-goto-char-timer)))
+  (with-eval-after-load 'avy
+    (with-eval-after-load 'org
+      (define-key org-mode-map (kbd "C-'") 'avy-goto-char)
+      (global-set-key (kbd "C-'") 'avy-goto-char)
+      (global-set-key (kbd "M-'") 'avy-goto-char-timer)))
 #+end_src
 
 * Initialize

@@ -100,6 +100,7 @@
 
 (with-eval-after-load 'avy
   (with-eval-after-load 'org
+    (define-key org-mode-map (kbd "C-'") 'avy-goto-char)
     (global-set-key (kbd "C-'") 'avy-goto-char)
     (global-set-key (kbd "M-'") 'avy-goto-char-timer)))
 
