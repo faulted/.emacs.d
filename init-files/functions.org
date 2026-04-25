@@ -40,6 +40,13 @@ Disables the audio bell and sets up the visual bell
          (signal (car err) (cdr err))))))
 #+end_src
 
+** Suppress the recentf save message in the minibuffer
+#+begin_src emacs-lisp
+  (defun silent-recentf-save (&rest args)
+    (let ((inhibit-message t))
+      (apply (car args) (cdr args))))
+#+end_src
+
 * Interactive functions
 
 ** sudo-shell-command

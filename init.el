@@ -67,11 +67,16 @@
 
 (savehist-mode 1)
 
-(setq recentf-auto-cleanup nil)
-(setq recentf-max-saved-items 50)
-(recentf-mode 1)
-;; Saves the recent file list every five minutes
-(run-at-time nil (* 5 60) 'recentf-save-list)
+(with-eval-after-load 'no-littering
+  (setq recentf-auto-cleanup 'never)
+  (setq recentf-max-saved-items 50)
+  (recentf-mode 1)
+  
+  ;; Saves the recent file list every five minutes
+  (run-at-time nil (* 5 60) 'recentf-save-list)
+
+  ;; Suppress the recentf-save message in the minibuffer
+  (advice-add 'recentf-save-list :around #'silent-recentf-save))
 
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)

@@ -22,6 +22,10 @@
              (message "Autosave file deleted.")))
        (signal (car err) (cdr err))))))
 
+(defun silent-recentf-save (&rest args)
+  (let ((inhibit-message t))
+    (apply (car args) (cdr args))))
+
 (defun sudo-shell-command (command)
   (interactive "Command: ")
   (with-temp-buffer
