@@ -22,6 +22,24 @@ Disables the audio bell and sets up the visual bell
     (format "/%d" (count-lines (point-min) (point-max))))
 #+end_src
 
+** Prompt for autosave file deletion
+#+begin_src emacs-lisp
+  (defun recover-this-file-maybe-delete-autosave (orig-fun &rest args)
+    "After declining recovery, offer to delete the autosave file."
+    (condition-case err
+        (apply orig-fun args)
+      (error
+       (if (string-match-p "canceled" (error-message-string err))
+           (let ((auto-save-file (make-auto-save-file-name)))
+             (when (and auto-save-file
+                        (file-exists-p auto-save-file)
+                        (yes-or-no-p
+                         (format "Delete autosave file %s? " auto-save-file)))
+               (delete-file auto-save-file)
+               (message "Autosave file deleted.")))
+         (signal (car err) (cdr err))))))
+#+end_src
+
 * Interactive functions
 
 ** sudo-shell-command

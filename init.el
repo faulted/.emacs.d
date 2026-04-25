@@ -112,6 +112,10 @@
                    " " vc-mode)))
       (setq vc-mode noback))))
 
+(advice-add 'recover-this-file :around #'recover-this-file-maybe-delete-autosave)
+
+(setq kill-buffer-delete-auto-save-files t)
+
 (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 
 (require 'keybindings)

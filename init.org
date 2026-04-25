@@ -195,6 +195,16 @@ Prefer vertical splits when automatically splitting
         (setq vc-mode noback))))
 #+end_src
 
+** Prompt for autosave file deletion if recovery is declined
+#+begin_src emacs-lisp
+  (advice-add 'recover-this-file :around #'recover-this-file-maybe-delete-autosave)
+#+end_src
+
+** Killing an unsaved buffer prompts for autosave creation
+#+begin_src emacs-lisp
+  (setq kill-buffer-delete-auto-save-files t)
+#+end_src
+
 * Load files
 
 ** Add init-files directory to load-path

@@ -7,6 +7,21 @@
 (defun get-buffer-line-count ()
   (format "/%d" (count-lines (point-min) (point-max))))
 
+(defun recover-this-file-maybe-delete-autosave (orig-fun &rest args)
+  "After declining recovery, offer to delete the autosave file."
+  (condition-case err
+      (apply orig-fun args)
+    (error
+     (if (string-match-p "canceled" (error-message-string err))
+         (let ((auto-save-file (make-auto-save-file-name)))
+           (when (and auto-save-file
+                      (file-exists-p auto-save-file)
+                      (yes-or-no-p
+                       (format "Delete autosave file %s? " auto-save-file)))
+             (delete-file auto-save-file)
+             (message "Autosave file deleted.")))
+       (signal (car err) (cdr err))))))
+
 (defun sudo-shell-command (command)
   (interactive "Command: ")
   (with-temp-buffer
