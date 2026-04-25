@@ -6,6 +6,7 @@
 
 * Keybindings
 Central location for all keybindings to be set at
+
 ** Built-in keybindings
 Keybindings that override built-in Emacs functionality
 #+begin_src emacs-lisp
@@ -36,12 +37,14 @@ Keybindings that override built-in Emacs functionality
   (with-eval-after-load 'dired
     (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode))
 #+end_src
+
 ** vterm
 #+begin_src emacs-lisp
   (with-eval-after-load 'vterm
     (global-set-key (kbd "C-c v n") 'multi-vterm)
     (global-set-key (kbd "C-c v r") 'vterm-rename-buffer))
 #+end_src
+
 ** dired-subtree
 #+begin_src emacs-lisp
   (with-eval-after-load 'dired
@@ -50,22 +53,26 @@ Keybindings that override built-in Emacs functionality
     (define-key dired-mode-map (kbd "<backtab>") 'dired-subtree-remove)
     (define-key dired-mode-map (kbd "S-TAB") 'dired-subtree-remove))
 #+end_src
+
 ** vundo
 #+begin_src emacs-lisp
   (with-eval-after-load 'vundo
     (global-set-key (kbd "C-x u") 'vundo))
 #+end_src
+
 ** magit
 #+begin_src emacs-lisp
   (with-eval-after-load 'magit
     (global-set-key (kbd "C-x m m") 'magit)
     (global-set-key (kbd "C-x m b") 'magit-blame))
 #+end_src
+
 ** marginalia
 #+begin_src emacs-lisp
   (with-eval-after-load 'marginalia
     (define-key minibuffer-local-map (kbd "M-A") 'marginalia-cycle))
 #+end_src
+
 ** embark
 #+begin_src emacs-lisp
   (with-eval-after-load 'embark
@@ -73,6 +80,7 @@ Keybindings that override built-in Emacs functionality
     (define-key minibuffer-local-map (kbd "C-c C-c") 'embark-collect)
     (define-key minibuffer-local-map (kbd "C-c C-e") 'embark-export))
 #+end_src
+
 ** consult
 #+begin_src emacs-lisp
   (with-eval-after-load 'consult
@@ -83,16 +91,18 @@ Keybindings that override built-in Emacs functionality
     (global-set-key (kbd "C-x c r") 'consult-recent-file)
     (global-set-key (kbd "C-x c o") 'consult-outline)
     ;; Overwrites default Emacs behavior
-    (global-set-key (kbd "C-x b")   'consult-buffer)
+    (global-set-key (kbd "C-x b") 'consult-buffer)
     (global-set-key (kbd "C-x p b") 'consult-project-buffer)
-    (global-set-key (kbd "C-S-s")   'consult-line))
+    (global-set-key (kbd "C-S-s") 'consult-line))
 #+end_src
+
 ** sudo-edit
 #+begin_src emacs-lisp
   (with-eval-after-load 'sudo-edit
     (define-key embark-file-map (kbd "s") 'sudo-edit-find-file)
     (define-key embark-become-file+buffer-map (kbd "s") 'sudo-edit-find-file))
 #+end_src
+
 ** wgrep
 #+begin_src emacs-lisp
   (with-eval-after-load 'wgrep
@@ -103,36 +113,49 @@ Keybindings that override built-in Emacs functionality
     (define-key wgrep-mode-map (kbd "C-x C-s") nil)
     (define-key wgrep-mode-map (kbd "C-c C-e") nil))
 #+end_src
+
 ** corfu
 #+begin_src emacs-lisp
   (with-eval-after-load 'corfu
     (define-key corfu-map (kbd "<tab>") 'corfu-complete))
 #+end_src
+
 ** dabbrev
 #+begin_src emacs-lisp
   (with-eval-after-load 'dabbrev
     (global-set-key (kbd "M-/") 'dabbrev-completion)
     (global-set-key (kbd "C-M-/") 'dabbrev-expand))
 #+end_src
+
 ** multiple-cursors
 #+begin_src emacs-lisp
   (with-eval-after-load 'multiple-cursors
     (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-    (global-set-key (kbd "C->")         'mc/mark-next-like-this)
-    (global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
-    (global-set-key (kbd "C-;")         'mc/mark-all-like-this)
-    (global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-;") 'mc/mark-all-like-this)
+    (global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)
     (add-hook 'multiple-cursors-mode-hook
               (lambda ()
                 (define-key mc/keymap (kbd "C-:")
                             #'mc/skip-to-previous-like-this))))
 #+end_src
+
 ** ace-window
 #+begin_src emacs-lisp
   (with-eval-after-load 'ace-window
     (global-set-key (kbd "M-O") 'ace-window)
     (global-set-key (kbd "C-M-o") 'ace-swap-window))
 #+end_src
+
+** avy
+avy is installed as a dependency of ace-window, so we just need to set up keybindings
+#+begin_src emacs-lisp
+  (with-eval-after-load 'avy
+    (global-set-key (kbd "C-'") 'avy-goto-char)
+    (global-set-key (kbd "M-'") 'avy-goto-char-timer))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'keybindings)

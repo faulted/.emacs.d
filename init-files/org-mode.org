@@ -15,10 +15,8 @@ org-mode related packages and settings
       (make-directory org-dir t)))
 
   (defun org-mode-setup ()
-    ; (org-indent-mode)
-    (auto-fill-mode 1)
-    (setq fill-column 100))
-
+    (org-indent-mode))
+  
   (use-package org
     :hook (org-mode . org-mode-setup))
 
@@ -111,6 +109,12 @@ Configure auto-tangle so we don't have to manually tangle our init file
 ** org-mode enable line numbers
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook 'display-line-numbers-mode)
+#+end_src
+
+** org-mode enable visual line mode and whitespace word wrap
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'visual-line-mode)
+  (add-hook 'org-mode-hook 'word-wrap-whitespace-mode)
 #+end_src
 
 * Initialize

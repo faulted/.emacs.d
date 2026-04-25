@@ -4,9 +4,7 @@
     (make-directory org-dir t)))
 
 (defun org-mode-setup ()
-  ; (org-indent-mode)
-  (auto-fill-mode 1)
-  (setq fill-column 100))
+  (org-indent-mode))
 
 (use-package org
   :hook (org-mode . org-mode-setup))
@@ -78,5 +76,8 @@
 (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
 
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
+
+(add-hook 'org-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'word-wrap-whitespace-mode)
 
 (provide 'org-mode)

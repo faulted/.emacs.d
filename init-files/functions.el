@@ -4,18 +4,6 @@
   (run-with-timer 0.1 nil #'invert-face 'mode-line-active)
   (run-with-timer 0.1 nil #'invert-face 'mode-line-inactive))
 
-(defun scroll-up-and-center ()
-  (interactive)
-  (scroll-up-command)
-  (unless (pos-visible-in-window-p (point-max))
-    (recenter)))
-
-(defun scroll-down-and-center ()
-  (interactive)
-  (scroll-down-command)
-  (unless (pos-visible-in-window-p (point-min))
-    (recenter)))
-
 (defun get-buffer-line-count ()
   (format "/%d" (count-lines (point-min) (point-max))))
 

@@ -58,9 +58,9 @@
   (global-set-key (kbd "C-x c r") 'consult-recent-file)
   (global-set-key (kbd "C-x c o") 'consult-outline)
   ;; Overwrites default Emacs behavior
-  (global-set-key (kbd "C-x b")   'consult-buffer)
+  (global-set-key (kbd "C-x b") 'consult-buffer)
   (global-set-key (kbd "C-x p b") 'consult-project-buffer)
-  (global-set-key (kbd "C-S-s")   'consult-line))
+  (global-set-key (kbd "C-S-s") 'consult-line))
 
 (with-eval-after-load 'sudo-edit
   (define-key embark-file-map (kbd "s") 'sudo-edit-find-file)
@@ -83,10 +83,10 @@
 
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->")         'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-;")         'mc/mark-all-like-this)
-  (global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-;") 'mc/mark-all-like-this)
+  (global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)
   (add-hook 'multiple-cursors-mode-hook
             (lambda ()
               (define-key mc/keymap (kbd "C-:")
@@ -95,5 +95,9 @@
 (with-eval-after-load 'ace-window
   (global-set-key (kbd "M-O") 'ace-window)
   (global-set-key (kbd "C-M-o") 'ace-swap-window))
+
+(with-eval-after-load 'avy
+  (global-set-key (kbd "C-'") 'avy-goto-char)
+  (global-set-key (kbd "M-'") 'avy-goto-char-timer))
 
 (provide 'keybindings)
