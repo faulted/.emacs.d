@@ -45,7 +45,8 @@
       '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
         (".*" "~/.emacs.d/autosaves/" t)))
 
-(global-display-line-numbers-mode 1)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
 (add-hook 'display-line-numbers-mode-hook
           (lambda () (setq display-line-numbers 'relative)))
 
@@ -57,6 +58,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq scroll-conservatively 101)
+
+(global-set-key (kbd "C-v") #'scroll-up-and-center)
+(global-set-key (kbd "M-v") #'scroll-down-and-center)
 
 (setq help-window-select t)
 

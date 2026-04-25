@@ -69,9 +69,13 @@ Common configurations for built-in packages
           (".*" "~/.emacs.d/autosaves/" t)))
 #+end_src
 
+** prog-mode enable line numbers
+#+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+end_src
+
 ** display relative line numbers
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode 1)
   (add-hook 'display-line-numbers-mode-hook
             (lambda () (setq display-line-numbers 'relative)))
 #+end_src
@@ -96,6 +100,12 @@ Common configurations for built-in packages
 Don't jump scroll at the bottom or top of the window
 #+begin_src emacs-lisp
   (setq scroll-conservatively 101)
+#+end_src
+
+** Recenter when scrolling up and down with C-v and M-v
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-v") #'scroll-up-and-center)
+  (global-set-key (kbd "M-v") #'scroll-down-and-center)
 #+end_src
 
 ** help-window-select

@@ -77,4 +77,6 @@
 
 (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
 
+(add-hook 'org-mode-hook 'display-line-numbers-mode)
+
 (provide 'org-mode)

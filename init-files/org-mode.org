@@ -108,6 +108,11 @@ Configure auto-tangle so we don't have to manually tangle our init file
   (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
 #+end_src
 
+** org-mode enable line numbers
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'display-line-numbers-mode)
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'org-mode)
