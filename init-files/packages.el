@@ -49,7 +49,7 @@
   (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package vundo
-  :defer t)
+  :ensure t)
 
 (use-package magit
   :defer t)

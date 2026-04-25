@@ -81,7 +81,7 @@
 Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vundo tree.
 #+begin_src emacs-lisp
   (use-package vundo
-    :defer t)
+    :ensure t)
 #+end_src
 
 ** magit
