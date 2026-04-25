@@ -58,7 +58,8 @@
       '(("magit:.**"
          (display-buffer-reuse-window display-buffer-same-window))))
 
-(add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
+(with-eval-after-load 'project
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t))
 
 (use-package minions
   :config

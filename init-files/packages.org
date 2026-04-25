@@ -101,7 +101,8 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
 
 *** Add magit as an option to project.el
 #+begin_src emacs-lisp
-  (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t)
+  (with-eval-after-load 'project
+    (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t))
 #+end_src
 
 ** minions
