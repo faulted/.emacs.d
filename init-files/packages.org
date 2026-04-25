@@ -24,23 +24,12 @@
 #+begin_src emacs-lisp
   (use-package vterm
     :ensure t
-    :preface
-    (defun multi-vterm ()
-      (interactive)
-      (let ((n 1)
-            name)
-        (while (get-buffer (setq name (format "*vterm*<%d>" n)))
-          (setq n (1+ n)))
-        (vterm name)))
-
-    (defun vterm-rename-buffer (name)
-      (interactive "sName? ")
-      (unless (eq major-mode 'vterm-mode)
-        (user-error "Not a vterm buffer"))
-      (rename-buffer (format "*vterm*<%s>" name)))
-
     :custom
-    (vterm-max-scrollback 20000))
+    (vterm-max-scrollback 20000)
+    :hook
+    ;; Set up vterm to enable quick copying via selecting with the mouse
+    (vterm-mode . (lambda ()
+                    (setq mouse-drag-copy-region t))))
 #+end_src
 
 ** rainbow-delimiters
@@ -89,7 +78,7 @@ Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vund
 *** Enable magit
 #+begin_src emacs-lisp
   (use-package magit
-    :defer t)
+    :ensure t)
 #+end_src
 
 *** Set the default behavior of the Magit buffer to reuse the current window

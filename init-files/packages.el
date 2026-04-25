@@ -8,23 +8,12 @@
 
 (use-package vterm
   :ensure t
-  :preface
-  (defun multi-vterm ()
-    (interactive)
-    (let ((n 1)
-          name)
-      (while (get-buffer (setq name (format "*vterm*<%d>" n)))
-        (setq n (1+ n)))
-      (vterm name)))
-
-  (defun vterm-rename-buffer (name)
-    (interactive "sName? ")
-    (unless (eq major-mode 'vterm-mode)
-      (user-error "Not a vterm buffer"))
-    (rename-buffer (format "*vterm*<%s>" name)))
-
   :custom
-  (vterm-max-scrollback 20000))
+  (vterm-max-scrollback 20000)
+  :hook
+  ;; Set up vterm to enable quick copying via selecting with the mouse
+  (vterm-mode . (lambda ()
+                  (setq mouse-drag-copy-region t))))
 
 (use-package rainbow-delimiters
   :defer t
@@ -52,7 +41,7 @@
   :ensure t)
 
 (use-package magit
-  :defer t)
+  :ensure t)
 
 (setq display-buffer-alist
       '(("magit:.**"
