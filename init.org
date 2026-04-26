@@ -213,6 +213,15 @@ Prefer vertical splits when automatically splitting
   (setq kill-buffer-delete-auto-save-files t)
 #+end_src
 
+** Set font to JetBrains Mono Nerd Font
+#+begin_src emacs-lisp
+  (when (member "JetBrainsMono Nerd Font" (font-family-list))
+    (set-face-attribute 'default nil
+                        :weight 'normal
+                        :height 100
+                        :family "JetBrainsMono Nerd Font"))
+#+end_src
+
 * Load files
 
 ** Add init-files directory to load-path

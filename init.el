@@ -122,6 +122,12 @@
 
 (setq kill-buffer-delete-auto-save-files t)
 
+(when (member "JetBrainsMono Nerd Font" (font-family-list))
+  (set-face-attribute 'default nil
+                      :weight 'normal
+                      :height 100
+                      :family "JetBrainsMono Nerd Font"))
+
 (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
 
 (require 'keybindings)
