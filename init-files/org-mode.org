@@ -7,6 +7,28 @@
 * Org-Mode
 org-mode related packages and settings
 
+** Set heading face sizes
+#+begin_src emacs-lisp
+  (defun set-specific-faces-org ()
+    ;; (set-face-attribute 'org-code nil
+    ;;                     :inherit '(shadow fixed-pitch))
+    ;; Without indentation the headlines need to be different to be visible
+    (set-face-attribute 'org-level-1 nil
+                        :height 1.25)
+    (set-face-attribute 'org-level-2 nil
+                        :height 1.15)
+    (set-face-attribute 'org-level-3 nil
+                        :height 1.1)
+    (set-face-attribute 'org-level-4 nil
+                        :height 1.05)
+    (set-face-attribute 'org-level-5 nil
+                        :height 1.0)
+    (set-face-attribute 'org-date nil
+                        :height 0.8)
+    (set-face-attribute 'org-document-title nil
+                        :height 1.5))
+#+end_src
+
 ** org-mode setup
 #+begin_src emacs-lisp
   ;; Create ~/Documents/org-files/ directory if it doesn't exist
@@ -15,8 +37,9 @@ org-mode related packages and settings
       (make-directory org-dir t)))
 
   (defun org-mode-setup ()
-    (org-indent-mode))
-  
+    (org-indent-mode)
+    (set-specific-faces-org))
+
   (use-package org
     :hook (org-mode . org-mode-setup))
 
@@ -67,7 +90,8 @@ Configure auto-tangle so we don't have to manually tangle our init file
            ("C-c C-c" . nil)
            ("C-c C-'" . org-capture-finalize)
            :map org-mode-map
-           ("C-M-i"   . completion-at-point))
+           ("C-M-i"   . completion-at-point)
+           ("C-<tab>" . org-indent-block))
     :config
     ;; If you're using a vertical completion framework, you might want a more informative completion interface
     (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
@@ -91,6 +115,16 @@ Configure auto-tangle so we don't have to manually tangle our init file
   (add-hook 'org-mode-hook
             (lambda ()
               (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
+#+end_src
+
+** org-superstar
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :ensure t
+    :demand t)
+
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  (setq org-indent-mode-turns-on-hiding-stars nil)
 #+end_src
 
 ** org-agenda

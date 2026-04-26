@@ -1,10 +1,30 @@
+(defun set-specific-faces-org ()
+  ;; (set-face-attribute 'org-code nil
+  ;;                     :inherit '(shadow fixed-pitch))
+  ;; Without indentation the headlines need to be different to be visible
+  (set-face-attribute 'org-level-1 nil
+                      :height 1.25)
+  (set-face-attribute 'org-level-2 nil
+                      :height 1.15)
+  (set-face-attribute 'org-level-3 nil
+                      :height 1.1)
+  (set-face-attribute 'org-level-4 nil
+                      :height 1.05)
+  (set-face-attribute 'org-level-5 nil
+                      :height 1.0)
+  (set-face-attribute 'org-date nil
+                      :height 0.8)
+  (set-face-attribute 'org-document-title nil
+                      :height 1.5))
+
 ;; Create ~/Documents/org-files/ directory if it doesn't exist
 (let ((org-dir "~/Documents/org-files/"))
   (unless (file-exists-p org-dir)
     (make-directory org-dir t)))
 
 (defun org-mode-setup ()
-  (org-indent-mode))
+  (org-indent-mode)
+  (set-specific-faces-org))
 
 (use-package org
   :hook (org-mode . org-mode-setup))
@@ -46,7 +66,8 @@
          ("C-c C-c" . nil)
          ("C-c C-'" . org-capture-finalize)
          :map org-mode-map
-         ("C-M-i"   . completion-at-point))
+         ("C-M-i"   . completion-at-point)
+         ("C-<tab>" . org-indent-block))
   :config
   ;; If you're using a vertical completion framework, you might want a more informative completion interface
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
@@ -67,6 +88,13 @@
 (add-hook 'org-mode-hook
           (lambda ()
             (font-lock-ensure))) ;; Ensure font-locking on org-mode activation
+
+(use-package org-superstar
+  :ensure t
+  :demand t)
+
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(setq org-indent-mode-turns-on-hiding-stars nil)
 
 (make-directory "~/Documents/org-agenda/" t)
 (setq org-agenda-files '("~/Documents/org-agenda/agenda.org"))

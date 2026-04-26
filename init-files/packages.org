@@ -40,10 +40,19 @@
 #+end_src
 
 ** diredfl
+Enables font locking in dired so that the text is color coded
 #+begin_src emacs-lisp
   (use-package diredfl
     :defer t
     :hook (dired-mode . diredfl-mode))
+#+end_src
+
+** nerd-icons-dired
+Adds icons to dired mode
+#+begin_src emacs-lisp
+  (use-package nerd-icons-dired
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
 #+end_src
 
 ** dired-subtree
