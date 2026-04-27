@@ -1,8 +1,10 @@
 #+TITLE: functions.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/init-files/functions.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/functions.el"
 #+auto_tangle: t
+
+Helper functions
 
 * Functions
 
@@ -160,7 +162,15 @@ Disables the audio bell and sets up the visual bell
     (rename-buffer (format "*vterm*<%s>" name)))
 #+end_src
 
+* Keybinds
+
+** htop
+Keybinding used to call custom htop function.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c v h") 'htop)
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
-  (provide 'functions)
+  (provide 'config-functions)
 #+end_src

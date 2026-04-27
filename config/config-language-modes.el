@@ -8,4 +8,4 @@
                    ("rust-analyzer" :initializationOptions (:check (:command "clippy"))))))
   (setq rust-format-on-save t))
 
-(provide 'language-modes)
+(provide 'config-language-modes)

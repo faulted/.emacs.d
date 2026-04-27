@@ -1,0 +1,151 @@
+#+TITLE: editor.org - 2026
+#+AUTHOR: Chris
+#+STARTUP: showeverything
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/editor.el"
+#+auto_tangle: t
+
+Editing behaviour and built-in modes
+
+* Settings
+
+** delete-selection-mode
+Allow for overwriting selected regions when yanking from kill-ring.
+#+begin_src emacs-lisp
+  (delete-selection-mode 1)
+#+end_src
+
+** indent-tabs-mode
+Use 4 space characters for indentation.
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil
+  	          tab-width 4)
+#+end_src
+
+** Disable lockfiles
+#+begin_src emacs-lisp
+  (setq create-lockfiles nil)
+#+end_src
+
+** Organize backup files
+#+begin_src emacs-lisp
+  ;; create the backup dir if necessary, since emacs won't.
+  (make-directory "~/.emacs.d/backups/" t)
+
+  ;; Put backup files (ie foo~) in ~/.emacs.d/.
+  (setq backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
+
+  ;; Use copying to preserve symlinks
+  (setq backup-by-copying t)
+
+  ;; Keep multiple versions
+  (setq version-control t)
+  (setq delete-old-versions t)
+  (setq kept-new-versions 6)
+  (setq kept-old-versions 2)
+#+end_src
+
+** Organize autosave files
+#+begin_src emacs-lisp
+  ;; create the backup dir if necessary, since emacs won't.
+  (make-directory "~/.emacs.d/autosaves/" t)
+  (setq auto-save-file-name-transforms
+        '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
+          (".*" "~/.emacs.d/autosaves/" t)))
+#+end_src
+
+** Killing an unsaved buffer prompts for autosave creation
+#+begin_src emacs-lisp
+  (setq kill-buffer-delete-auto-save-files t)
+#+end_src
+
+** Prompt for autosave file deletion if recovery is declined
+#+begin_src emacs-lisp
+  (advice-add 'recover-this-file :around #'recover-this-file-maybe-delete-autosave)
+#+end_src
+
+** savehist
+#+begin_src emacs-lisp
+  (with-eval-after-load 'no-littering
+    (savehist-mode 1))
+#+end_src
+
+** recentf
+We have to eval this after no-littering loads since it changes the default location of the recentf save file.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'no-littering
+    (setq recentf-auto-cleanup 'never)
+    (setq recentf-max-saved-items 50)
+    (recentf-mode 1)
+    
+    ;; Saves the recent file list every five minutes
+    (run-at-time nil (* 5 60) 'recentf-save-list)
+
+    ;; Suppress the recentf-save message in the minibuffer
+    (advice-add 'recentf-save-list :around #'silent-recentf-save))
+#+end_src
+
+** dired
+#+begin_src emacs-lisp
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  (setq dired-listing-switches "-alh")
+
+  ;; Set wdired-change-to-wdired-mode
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode))
+#+end_src
+
+** TRAMP
+#+begin_src emacs-lisp
+  ;; Disable backup and auto-save for TRAMP files
+  (defun disable-tramp-backups ()
+    "Disable backups and auto-saves for TRAMP files."
+    (when (and buffer-file-name (file-remote-p buffer-file-name))
+      (setq-local make-backup-files nil)
+      (setq-local auto-save-default nil)
+      (setq-local create-lockfiles nil)))
+
+  (add-hook 'find-file-hook #'disable-tramp-backups)
+#+end_src
+
+* Built-in keybindings
+Keybindings that overwrite built-in Emacs functionality
+
+** Unbind compose-mail
+#+begin_src emacs-lisp
+  (unbind-key "C-x m")
+#+end_src
+
+** Set up ibuffer keybind
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+#+end_src
+
+** Set up undo and redo keybindings
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-z") 'undo)
+  (global-set-key (kbd "C-S-z") 'undo-redo)
+#+end_src
+
+** Set up other-window
+#+begin_src emacs-lisp
+  (global-set-key (kbd "M-o") 'other-window)
+#+end_src
+
+** Set up split-line since I just overwrote it with ace-swap-window
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x o") 'split-line)
+#+end_src
+
+** Invert dired and list-directory bindings
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x C-d") 'dired)
+  (global-set-key (kbd "C-x d") 'list-directory)
+#+end_src
+
+* Initialize
+#+begin_src emacs-lisp
+  (provide 'config-editor)
+#+end_src

@@ -1,0 +1,122 @@
+#+TITLE: ui.org
+#+AUTHOR: Chris
+#+STARTUP: showeverything
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/ui.el"
+#+auto_tangle: t
+
+Visual and frame configuration
+
+* Settings
+ 
+** Window settings
+#+begin_src emacs-lisp
+  (scroll-bar-mode -1)           ; Disable scrollbar
+  (tool-bar-mode -1)             ; Disable toolbar
+  (menu-bar-mode -1)             ; Disable menu bar
+  (column-number-mode 1)         ; Show column in modeline
+  (setq inhibit-splash-screen t) ; Skip splash screen
+#+end_src
+
+** Frame title
+Show full path in the frame title bar when visiting a file.
+#+begin_src emacs-lisp
+  (setq frame-title-format
+        '(buffer-file-name "%f" (dired-directory dired-directory "%b")))
+#+end_src
+
+** Font settings
+Set default font to "JetBrains Mono Nerd Font" if it's available in the system.
+#+begin_src emacs-lisp
+  (when (member "JetBrainsMono Nerd Font" (font-family-list))
+    (set-face-attribute 'default nil
+                        :weight 'normal
+                        :height 100
+                        :family "JetBrainsMono Nerd Font"))
+#+end_src
+
+** Visual bell
+Flash the mode-line as a visual bell indicator.
+#+begin_src emacs-lisp
+  (setq ring-bell-function #'visual-bell)
+#+end_src
+
+** Show total line count
+Shew the total line count of the current buffer in the mode-line.
+#+begin_src emacs-lisp
+  (setq mode-line-position
+        '(("(%l" (:eval (get-buffer-line-count)) ",%c) ")))
+#+end_src
+
+** Remove extra whitespace padding after buffer name
+#+begin_src emacs-lisp
+  (setq-default mode-line-buffer-identification
+                (propertized-buffer-identification "%b"))
+#+end_src
+
+** Fix trailing whitespace after git branch
+#+begin_src emacs-lisp
+  (advice-add 'vc-mode-line :after
+              (lambda (&rest _)
+                (when (stringp vc-mode)
+                  (setq vc-mode (concat vc-mode " ")))))
+#+end_src
+
+** Remove 'Git-' from vc-mode in the mode-line
+#+begin_src emacs-lisp
+  (defadvice vc-mode-line (after strip-backend () activate)
+    (when (stringp vc-mode)
+      (let ((noback (replace-regexp-in-string 
+                     (format "^ %s\\W" (vc-backend buffer-file-name))
+                     " " vc-mode)))
+        (setq vc-mode noback))))
+#+end_src
+
+** which-key-mode
+#+begin_src emacs-lisp
+  (which-key-mode)
+#+end_src
+
+** display relative line numbers
+#+begin_src emacs-lisp
+  (add-hook 'display-line-numbers-mode-hook
+            (lambda () (setq display-line-numbers 'relative)))
+#+end_src
+
+** prog-mode enable line numbers
+#+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+end_src
+
+** prog-mode enable visual line mode
+Visual-line-mode toggles "wrapping" when lines grow too long to be displayed in the current window.
+#+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook 'visual-line-mode)
+#+end_src
+
+** Window splitting preferences
+Prefer vertical splits when automatically splitting the window.
+#+begin_src emacs-lisp
+  (setq split-width-threshold 200)
+  (setq split-height-threshold nil)
+#+end_src
+
+** y or n
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+** scroll-conservatively
+Don't jump scroll at the bottom or top of the window
+#+begin_src emacs-lisp
+  (setq scroll-conservatively 101)
+#+end_src
+
+** help-window-select
+#+begin_src emacs-lisp
+  (setq help-window-select t)
+#+end_src
+
+* Initialize
+#+begin_src emacs-lisp
+  (provide 'config-ui)
+#+end_src

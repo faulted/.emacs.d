@@ -1,30 +1,3 @@
-;; Unbind compose-mail
-(unbind-key "C-x m")
-
-;; Set up ibuffer keybind
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
-;; Set up undo and redo keybindings
-(global-set-key (kbd "C-z") 'undo)
-(global-set-key (kbd "C-S-z") 'undo-redo)
-
-;; Set up other-window
-(global-set-key (kbd "M-o") 'other-window)
-
-;; Set up split-line since I just overwrote it with ace-swap-window
-(global-set-key (kbd "C-x o") 'split-line)
-
-;; Keybinding used to call custom htop function
-(global-set-key (kbd "C-c v h") 'htop)
-
-;; Invert dired and list-directory bindings
-(global-set-key (kbd "C-x C-d") 'dired)
-(global-set-key (kbd "C-x d") 'list-directory)
-
-;; Set wdired-change-to-wdired-mode
-(with-eval-after-load 'dired
-  (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode))
-
 (with-eval-after-load 'vterm
   (global-set-key (kbd "C-c v n") 'multi-vterm)
   (global-set-key (kbd "C-c v r") 'vterm-rename-buffer))
@@ -88,7 +61,7 @@
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-;") 'mc/mark-all-like-this)
-  (global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)tset
   (add-hook 'multiple-cursors-mode-hook
             (lambda ()
               (define-key mc/keymap (kbd "C-:")

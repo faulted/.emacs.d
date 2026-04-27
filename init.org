@@ -4,10 +4,9 @@
 #+PROPERTY: header-args :tangle "~/.emacs.d/init.el"
 #+auto_tangle: t
 
-* Base configuration
-Common configurations for built-in packages
+Emacs configuration entry point
 
-** Initialize package sources and use-package
+* Initialize package sources and use-package
 #+begin_src emacs-lisp
   ;; Initialize package sources
   (require 'package)
@@ -26,214 +25,29 @@ Common configurations for built-in packages
   (setq use-package-always-ensure t)
 #+end_src
 
-** Disable / configure default window elements
-#+begin_src emacs-lisp
-  (scroll-bar-mode -1)            ; Disable visible scrollbar
-  (tool-bar-mode -1)              ; Disable the toolbar
-  (menu-bar-mode -1)              ; Disable the menu bar
-  (column-number-mode 1)          ; Enable column numbers in mode-line
-  (delete-selection-mode 1)       ; Allow for overwriting regions when yanking from kill-ring
-  (setq inhibit-splash-screen t)  ; Disable splash screen
-#+end_src
-
-** indent-tabs-mode
-#+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil
-  	          tab-width 4)
-#+end_src
-
-** Organize backup files
-#+begin_src emacs-lisp
-  ;; create the backup dir if necessary, since emacs won't.
-  (make-directory "~/.emacs.d/backups/" t)
-
-  ;; Put backup files (ie foo~) in ~/.emacs.d/.
-  (setq backup-directory-alist '((".*" . "~/.emacs.d/backups/")))
-
-  ;; Use copying to preserve symlinks
-  (setq backup-by-copying t)
-
-  ;; Keep multiple versions
-  (setq version-control t)
-  (setq delete-old-versions t)
-  (setq kept-new-versions 6)
-  (setq kept-old-versions 2)
-#+end_src
-
-** Organize autosave files
-#+begin_src emacs-lisp
-  ;; create the backup dir if necessary, since emacs won't.
-  (make-directory "~/.emacs.d/autosaves/" t)
-  (setq auto-save-file-name-transforms
-        '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "/tmp/\\2" t)
-          (".*" "~/.emacs.d/autosaves/" t)))
-#+end_src
-
-** prog-mode enable line numbers
-#+begin_src emacs-lisp
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+end_src
-
-** prog-mode enable visual line mode
-#+begin_src emacs-lisp
-  (add-hook 'prog-mode-hook 'visual-line-mode)
-#+end_src
-
-** display relative line numbers
-#+begin_src emacs-lisp
-  (add-hook 'display-line-numbers-mode-hook
-            (lambda () (setq display-line-numbers 'relative)))
-#+end_src
-
-** which-key-mode
-#+begin_src emacs-lisp
-  (which-key-mode)
-#+end_src
-
-** Show file path in title frame
-#+begin_src emacs-lisp
-  (setq frame-title-format
-        '(buffer-file-name "%f" (dired-directory dired-directory "%b")))
-#+end_src
-
-** y or n
-#+begin_src emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+end_src
-
-** scroll-conservatively
-Don't jump scroll at the bottom or top of the window
-#+begin_src emacs-lisp
-  (setq scroll-conservatively 101)
-#+end_src
-
-** help-window-select
-#+begin_src emacs-lisp
-  (setq help-window-select t)
-#+end_src
-
-** Disable lockfiles
-#+begin_src emacs-lisp
-  (setq create-lockfiles nil)
-#+end_src
-
-** savehist
-#+begin_src emacs-lisp
-  (with-eval-after-load 'no-littering
-    (savehist-mode 1))
-#+end_src
-
-** recentf
-We have to eval this after no-littering loads since it changes the default location of the recentf save file.
-Could also configure this in the no-littering use-package, but I think it's cleaner to have it in this file.
-#+begin_src emacs-lisp
-  (with-eval-after-load 'no-littering
-    (setq recentf-auto-cleanup 'never)
-    (setq recentf-max-saved-items 50)
-    (recentf-mode 1)
-    
-    ;; Saves the recent file list every five minutes
-    (run-at-time nil (* 5 60) 'recentf-save-list)
-
-    ;; Suppress the recentf-save message in the minibuffer
-    (advice-add 'recentf-save-list :around #'silent-recentf-save))
-#+end_src
-
-** dired
-#+begin_src emacs-lisp
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t)
-  (setq dired-listing-switches "-alh")
-#+end_src
-
-** TRAMP
-#+begin_src emacs-lisp
-  ;; Disable backup and auto-save for TRAMP files
-  (defun disable-tramp-backups ()
-    "Disable backups and auto-saves for TRAMP files."
-    (when (and buffer-file-name (file-remote-p buffer-file-name))
-      (setq-local make-backup-files nil)
-      (setq-local auto-save-default nil)
-      (setq-local create-lockfiles nil)))
-
-  (add-hook 'find-file-hook #'disable-tramp-backups)
-#+end_src
-
-** Window splitting preferences
-Prefer vertical splits when automatically splitting
-#+begin_src emacs-lisp
-  (setq split-width-threshold 200)
-  (setq split-height-threshold nil)
-#+end_src
-
-** Add total line count to modeline
-#+begin_src emacs-lisp
-  (setq mode-line-position
-        '(("(%l" (:eval (get-buffer-line-count)) ",%c) ")))
-#+end_src
-
-** Remove extra whitespace padding after buffer name
-#+begin_src emacs-lisp
-  (setq-default mode-line-buffer-identification
-                (propertized-buffer-identification "%b"))
-#+end_src
-
-** Set the visual bell to flash the mode line
-#+begin_src emacs-lisp
-  (setq ring-bell-function #'visual-bell)
-#+end_src
-
-** Fix trailing whitespace after git branch
-#+begin_src emacs-lisp
-  (advice-add 'vc-mode-line :after
-              (lambda (&rest _)
-                (when (stringp vc-mode)
-                  (setq vc-mode (concat vc-mode " ")))))
-#+end_src
-
-** Remove 'Git-' from vc-mode in the mode-line
-#+begin_src emacs-lisp
-  (defadvice vc-mode-line (after strip-backend () activate)
-    (when (stringp vc-mode)
-      (let ((noback (replace-regexp-in-string 
-                     (format "^ %s\\W" (vc-backend buffer-file-name))
-                     " " vc-mode)))
-        (setq vc-mode noback))))
-#+end_src
-
-** Prompt for autosave file deletion if recovery is declined
-#+begin_src emacs-lisp
-  (advice-add 'recover-this-file :around #'recover-this-file-maybe-delete-autosave)
-#+end_src
-
-** Killing an unsaved buffer prompts for autosave creation
-#+begin_src emacs-lisp
-  (setq kill-buffer-delete-auto-save-files t)
-#+end_src
-
-** Set font to JetBrains Mono Nerd Font
-#+begin_src emacs-lisp
-  (when (member "JetBrainsMono Nerd Font" (font-family-list))
-    (set-face-attribute 'default nil
-                        :weight 'normal
-                        :height 100
-                        :family "JetBrainsMono Nerd Font"))
-#+end_src
-
 * Load files
 
 ** Add init-files directory to load-path
+Add the `./config/` directory to the load path since.
 #+begin_src emacs-lisp
-  (add-to-list 'load-path (expand-file-name "init-files/" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "config/" user-emacs-directory))
 #+end_src
 
 ** Require individual files
+Functions must come first since other modules may reference these helpers.
 #+begin_src emacs-lisp
-  (require 'keybindings)
-  (require 'org-mode)
-  (require 'packages)
-  (require 'language-modes)
-  (require 'functions)
+  (require 'config-functions)
+  (require 'config-ui)
+  (require 'config-editor)
+  (require 'config-packages)
+  (require 'config-org-mode)
+  (require 'config-language-modes)
+#+end_src
+
+** Require work config
+Conditionally load your work specific config file. The work config file just needs to be named, `work.el`, needs to be in the `init-files` directory, and needs to (provide 'config-work) in the file.
+#+begin_src emacs-lisp
+  (let ((work-file (expand-file-name "init-files/work.el" user-emacs-directory)))
+    (when (file-exists-p work-file)
+      (require 'config-work)))
 #+end_src

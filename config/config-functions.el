@@ -113,4 +113,6 @@
     (user-error "Not a vterm buffer"))
   (rename-buffer (format "*vterm*<%s>" name)))
 
-(provide 'functions)
+(global-set-key (kbd "C-c v h") 'htop)
+
+(provide 'config-functions)

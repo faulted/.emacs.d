@@ -1,0 +1,286 @@
+#+TITLE: packages.org - 2026
+#+AUTHOR: Chris
+#+STARTUP: showeverything
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/packages.el"
+#+auto_tangle: t
+
+Third-party package configuration
+
+* Package list
+
+** Theme
+
+*** tomorrow-night
+Disabled for now to try out doric-obsidian
+#+begin_src emacs-lisp
+  ;; (setq custom-safe-themes t)
+  ;; (use-package color-theme-sanityinc-tomorrow
+  ;;   :config
+  ;;   (load-theme 'sanityinc-tomorrow-night t))
+#+end_src
+
+*** doric-obsidian
+#+begin_src emacs-lisp
+  (use-package doric-themes
+    :demand t
+    :config
+    (doric-themes-select 'doric-obsidian))
+#+end_src
+
+** no-littering
+#+begin_src emacs-lisp
+  (use-package no-littering)
+#+end_src
+
+** vterm
+#+begin_src emacs-lisp
+  (use-package vterm
+    :custom
+    (vterm-max-scrollback 20000)
+    :hook
+    (vterm-mode . (lambda () (setq mouse-drag-copy-region t)))
+    :bind
+    (("C-c v n" . multi-vterm)
+     ("C-c v r" . vterm-rename-buffer)))
+#+end_src
+
+** diredfl
+Enables font locking in dired so that the text is color coded
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :hook
+    (dired-mode . diredfl-mode))
+#+end_src
+
+** nerd-icons-dired
+Adds icons to dired mode
+#+begin_src emacs-lisp
+  (use-package nerd-icons-dired
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
+#+end_src
+
+** dired-subtree
+#+begin_src emacs-lisp
+  (use-package dired-subtree
+    :after dired
+    :config
+    (setq dired-subtree-use-backgrounds nil)
+    :bind
+    (:map dired-mode-map
+          ("<tab>" . dired-subtree-toggle)
+          ("TAB" . dired-subtree-toggle)
+          ("<backtab>" . dired-subtree-remove)
+          ("S-TAB" . dired-subtree-remove)))
+#+end_src
+
+** trashed
+#+begin_src emacs-lisp
+  (use-package trashed
+    :commands (trashed)
+    :config
+    (setq trashed-use-header-line t)
+    (setq trashed-sort-key '("Date deleted" . t))
+    (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
+#+end_src
+
+** vundo
+Visual undo tree for Emacs. Overwrites the default undo key and dispays the Vundo tree.
+#+begin_src emacs-lisp
+  (use-package vundo
+    :bind ("C-x u" . vundo))
+#+end_src
+
+** magit
+
+*** Enable magit
+#+begin_src emacs-lisp
+  (use-package magit
+    :bind
+    (("C-x m m" . magit)
+     ("C-x m b" . magit-blame)))
+#+end_src
+
+*** Set the default behavior of the Magit buffer to reuse the current window
+#+begin_src emacs-lisp
+  (setq display-buffer-alist
+        '(("magit:.**"
+           (display-buffer-reuse-window display-buffer-same-window))))
+#+end_src
+
+*** Add magit as an option to project.el
+#+begin_src emacs-lisp
+  (with-eval-after-load 'project
+    (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t))
+#+end_src
+
+** minions
+#+begin_src emacs-lisp
+  (use-package minions
+    :config
+    (minions-mode 1))
+#+end_src
+
+** vertico
+#+begin_src emacs-lisp
+  (use-package vertico
+    :init
+    (vertico-mode))
+#+end_src
+
+** marginalia
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :init (marginalia-mode)
+    :bind (:map minibuffer-local-map
+                ("M-A" . marginalia-cycle)))
+#+end_src
+
+** orderless
+#+begin_src emacs-lisp
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion)))))
+#+end_src
+
+** consult
+#+begin_src emacs-lisp
+  (use-package consult
+    :config
+    (setq consult-line-start-from-top t)
+    :bind
+    (("C-x b"   . consult-buffer)
+     ("C-x p b" . consult-project-buffer)
+     ("C-S-s"   . consult-line)
+     ("C-x c g" . consult-ripgrep)
+     ("C-x c G" . consult-git-grep)
+     ("C-x c l" . consult-locate)
+     ("C-x c f" . consult-fd)
+     ("C-x c r" . consult-recent-file)
+     ("C-x c o" . consult-outline)
+     ("C-x c m" . consult-man)))
+#+end_src
+
+** embark
+#+begin_src emacs-lisp
+  (use-package embark
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+    :config
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none))))
+    :bind
+    (("C-." . embark-act)
+     :map minibuffer-local-map
+     ("C-c C-c" . embark-collect)
+     ("C-c C-e" . embark-export)))
+
+  (use-package embark-consult)
+#+end_src
+
+** sudo-edit
+#+begin_src emacs-lisp
+  (use-package sudo-edit
+    :after embark
+    :bind
+    (:map embark-file-map
+          ("s" . sudo-edit-find-file)
+          :map embark-become-file+buffer-map
+          ("s" . sudo-edit-find-file)))
+#+end_src
+
+** wgrep
+Lets us edit the results of a grep search while inside a grep-mode buffer
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :bind
+    (:map grep-mode-map
+          ("e" . wgrep-change-to-wgrep-mode)
+          :map wgrep-mode-map
+          ("C-c C-c" . wgrep-finish-edit)
+          ;; Remove default finish bindings so C-c C-c is the only way out
+          ("C-x C-s" . nil)
+          ("C-c C-e" . nil)))
+#+end_src
+
+** corfu
+#+begin_src emacs-lisp
+  (use-package corfu
+    :hook (after-init . global-corfu-mode)
+    :config
+    (setq tab-always-indent 'complete
+          corfu-preview-current nil
+          corfu-min-width 20
+          corfu-popupinfo-delay '(1.25 . 0.5))
+    (corfu-popupinfo-mode 1)
+    (with-eval-after-load 'savehist
+      (corfu-history-mode 1)
+      (add-to-list 'savehist-additional-variables 'corfu-history))
+    :bind (:map corfu-map
+                ("<tab>" . corfu-complete)))
+#+end_src
+
+** dabbrev
+Set up to be used with corfu
+#+begin_src emacs-lisp
+  (use-package dabbrev
+    :config
+    (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+    (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode)
+    :bind
+    (("M-/"   . dabbrev-completion)
+     ("C-M-/" . dabbrev-expand)))
+#+end_src
+
+** rainbow-delimiters
+Commenting this out while I try out doric theme
+#+begin_src emacs-lisp
+  ;; (use-package rainbow-delimiters
+  ;;   :defer t
+  ;;   :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
+#+end_src
+
+** multiple-cursors
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :demand t
+    :bind
+    (("C-S-c C-S-c" . mc/edit-lines)
+     ("C->"          . mc/mark-next-like-this)
+     ("C-<"          . mc/mark-previous-like-this)
+     ("C-;"          . mc/mark-all-like-this)
+     ("C-\""         . mc/skip-to-next-like-this))
+    :hook
+    (multiple-cursors-mode . (lambda ()
+                               (define-key mc/keymap (kbd "C-:")
+                                           #'mc/skip-to-previous-like-this))))
+#+end_src
+
+** ace-window
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :bind
+    (("M-O"   . ace-window)
+     ("C-M-o" . ace-swap-window)))
+#+end_src
+
+** avy
+#+begin_src emacs-lisp
+  (use-package avy
+    :bind
+    (("C-'"  . avy-goto-char)
+     ("M-'"  . avy-goto-char-timer)
+     :map org-mode-map
+     ("C-'"  . avy-goto-char)))
+#+end_src
+
+* Initialize
+#+begin_src emacs-lisp
+  (provide 'config-packages)
+#+end_src

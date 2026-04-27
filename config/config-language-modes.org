@@ -1,7 +1,7 @@
 #+TITLE: language-modes.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/init-files/language-modes.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/language-modes.el"
 #+auto_tangle: t
 
 * Language modes
@@ -21,5 +21,5 @@
 
 * Initialize
 #+begin_src emacs-lisp
-  (provide 'language-modes)
+  (provide 'config-language-modes)
 #+end_src
