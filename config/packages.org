@@ -265,6 +265,7 @@ Commenting this out while I try out doric theme
 ** avy
 #+begin_src emacs-lisp
   (use-package avy
+    :after org
     :bind
     (("C-'"  . avy-goto-char)
      ("M-'"  . avy-goto-char-timer)

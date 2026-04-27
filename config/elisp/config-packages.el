@@ -170,6 +170,7 @@
    ("C-M-o" . ace-swap-window)))
 
 (use-package avy
+  :after org
   :bind
   (("C-'"  . avy-goto-char)
    ("M-'"  . avy-goto-char-timer)
