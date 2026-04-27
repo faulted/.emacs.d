@@ -3,9 +3,7 @@
 #+STARTUP: showeverything
 
 * Setup
-I've tried to keep this config setup reasonably agnostic (meaning that I'd be fine using this config anywhere). There will, inevitably, be configurations specifically for work that need to be made which will be covered below.
-
-** Clone the Git repo to $HOME
+I've tried to keep this config setup reasonably agnostic (meaning that I'd be fine using this config anywhere). There will, inevitably, be configurations specifically for work that need to be made.
 
 ** Work specific changes
 The inclusion of your work specific configuration is already stubbed out in `init.org`, and subsequently `init.el`. To set up your work related configurations, simply make a `work.org` file in the `./config/` directory, and set the tangle target as follows:
