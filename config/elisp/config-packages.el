@@ -14,7 +14,7 @@
   :custom
   (vterm-max-scrollback 20000)
   :hook
-  (vterm-mode . (lambda () (setq mouse-drag-copy-region t)))
+  (vterm-mode . (lambda () (setq-local mouse-drag-copy-region t)))
   :bind
   (("C-c v n" . multi-vterm)
    ("C-c v r" . vterm-rename-buffer)))
