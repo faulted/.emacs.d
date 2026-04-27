@@ -4,7 +4,7 @@
 #+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-org-mode.el"
 #+auto_tangle: t
 
-Org-mode and org-roam configuration
+All things Org related; org-mode, org-roam, org-agenda, etc.
 
 * Org-Mode
 org-mode related packages and settings
