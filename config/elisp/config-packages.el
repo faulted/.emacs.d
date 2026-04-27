@@ -1,12 +1,7 @@
-;; (setq custom-safe-themes t)
-;; (use-package color-theme-sanityinc-tomorrow
-;;   :config
-;;   (load-theme 'sanityinc-tomorrow-night t))
-
-(use-package doric-themes
-  :demand t
+(setq custom-safe-themes t)
+(use-package color-theme-sanityinc-tomorrow
   :config
-  (doric-themes-select 'doric-obsidian))
+  (load-theme 'sanityinc-tomorrow-night t))
 
 (use-package no-littering)
 

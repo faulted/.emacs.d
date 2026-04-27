@@ -13,18 +13,10 @@ Third-party package configuration
 *** tomorrow-night
 Disabled for now to try out doric-obsidian
 #+begin_src emacs-lisp
-  ;; (setq custom-safe-themes t)
-  ;; (use-package color-theme-sanityinc-tomorrow
-  ;;   :config
-  ;;   (load-theme 'sanityinc-tomorrow-night t))
-#+end_src
-
-*** doric-obsidian
-#+begin_src emacs-lisp
-  (use-package doric-themes
-    :demand t
+  (setq custom-safe-themes t)
+  (use-package color-theme-sanityinc-tomorrow
     :config
-    (doric-themes-select 'doric-obsidian))
+    (load-theme 'sanityinc-tomorrow-night t))
 #+end_src
 
 ** no-littering
