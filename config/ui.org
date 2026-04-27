@@ -1,7 +1,7 @@
 #+TITLE: ui.org
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/ui.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-ui.el"
 #+auto_tangle: t
 
 Visual and frame configuration

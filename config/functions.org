@@ -1,7 +1,7 @@
 #+TITLE: functions.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/functions.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-functions.el"
 #+auto_tangle: t
 
 Helper functions
@@ -12,10 +12,15 @@ Helper functions
 Disables the audio bell and sets up the visual bell
 #+begin_src emacs-lisp
   (defun visual-bell ()
-    (invert-face 'mode-line-active)
-    (invert-face 'mode-line-inactive)
-    (run-with-timer 0.1 nil #'invert-face 'mode-line-active)
-    (run-with-timer 0.1 nil #'invert-face 'mode-line-inactive))
+    (let ((orig-fg (face-foreground 'mode-line-active))
+          (orig-bg (face-background 'mode-line-active)))
+      (invert-face 'mode-line-active)
+      (invert-face 'mode-line-inactive)
+      (run-with-timer 0.1 nil
+                      `(lambda ()
+                         (set-face-foreground 'mode-line-active ,orig-fg)
+                         (set-face-background 'mode-line-active ,orig-bg)
+                         (invert-face 'mode-line-inactive)))))
 #+end_src
 
 ** Get total buffer line count 

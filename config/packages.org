@@ -1,7 +1,7 @@
 #+TITLE: packages.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/packages.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-packages.el"
 #+auto_tangle: t
 
 Third-party package configuration

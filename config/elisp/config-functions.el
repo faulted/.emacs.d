@@ -1,8 +1,13 @@
 (defun visual-bell ()
-  (invert-face 'mode-line-active)
-  (invert-face 'mode-line-inactive)
-  (run-with-timer 0.1 nil #'invert-face 'mode-line-active)
-  (run-with-timer 0.1 nil #'invert-face 'mode-line-inactive))
+  (let ((orig-fg (face-foreground 'mode-line-active))
+        (orig-bg (face-background 'mode-line-active)))
+    (invert-face 'mode-line-active)
+    (invert-face 'mode-line-inactive)
+    (run-with-timer 0.1 nil
+                    `(lambda ()
+                       (set-face-foreground 'mode-line-active ,orig-fg)
+                       (set-face-background 'mode-line-active ,orig-bg)
+                       (invert-face 'mode-line-inactive)))))
 
 (defun get-buffer-line-count ()
   (format "/%d" (count-lines (point-min) (point-max))))

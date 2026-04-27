@@ -30,7 +30,7 @@ Emacs configuration entry point
 ** Add init-files directory to load-path
 Add the `./config/` directory to the load path since.
 #+begin_src emacs-lisp
-  (add-to-list 'load-path (expand-file-name "config/" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "config/elisp/" user-emacs-directory))
 #+end_src
 
 ** Require individual files

@@ -1,7 +1,7 @@
 #+TITLE: org-mode.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/org-mode.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-org-mode.el"
 #+auto_tangle: t
 
 Org-mode and org-roam configuration

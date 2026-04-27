@@ -1,7 +1,7 @@
 #+TITLE: editor.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/editor.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config-editor.el"
 #+auto_tangle: t
 
 Editing behaviour and built-in modes

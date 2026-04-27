@@ -14,7 +14,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(add-to-list 'load-path (expand-file-name "config/" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "config/elisp/" user-emacs-directory))
 
 (require 'config-functions)
 (require 'config-ui)

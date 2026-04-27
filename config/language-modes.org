@@ -1,7 +1,7 @@
 #+TITLE: language-modes.org - 2026
 #+AUTHOR: Chris
 #+STARTUP: showeverything
-#+PROPERTY: header-args :tangle "~/.emacs.d/config/language-modes.el"
+#+PROPERTY: header-args :tangle "~/.emacs.d/config/elisp/config/language-modes.el"
 #+auto_tangle: t
 
 * Language modes
