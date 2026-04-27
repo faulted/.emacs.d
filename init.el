@@ -23,6 +23,6 @@
 (require 'config-org-mode)
 (require 'config-language-modes)
 
-(let ((work-file (expand-file-name "init-files/work.el" user-emacs-directory)))
+(let ((work-file (expand-file-name "config/elisp/config-work.el" user-emacs-directory)))
   (when (file-exists-p work-file)
     (require 'config-work)))

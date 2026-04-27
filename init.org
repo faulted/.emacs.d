@@ -33,7 +33,7 @@ Add the `./config/` directory to the load path since.
   (add-to-list 'load-path (expand-file-name "config/elisp/" user-emacs-directory))
 #+end_src
 
-** Require individual files
+** Require base configs
 Functions must come first since other modules may reference these helpers.
 #+begin_src emacs-lisp
   (require 'config-functions)
@@ -45,9 +45,9 @@ Functions must come first since other modules may reference these helpers.
 #+end_src
 
 ** Require work config
-Conditionally load your work specific config file. The work config file just needs to be named, `work.el`, needs to be in the `init-files` directory, and needs to (provide 'config-work) in the file.
+Conditionally load your work specific config file.
 #+begin_src emacs-lisp
-  (let ((work-file (expand-file-name "init-files/work.el" user-emacs-directory)))
+  (let ((work-file (expand-file-name "config/elisp/config-work.el" user-emacs-directory)))
     (when (file-exists-p work-file)
       (require 'config-work)))
 #+end_src
