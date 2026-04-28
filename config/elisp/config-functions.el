@@ -1,13 +1,21 @@
+(defvar visual-bell--timer nil)
+
 (defun visual-bell ()
-  (let ((orig-fg (face-foreground 'mode-line-active))
-        (orig-bg (face-background 'mode-line-active)))
-    (invert-face 'mode-line-active)
-    (invert-face 'mode-line-inactive)
-    (run-with-timer 0.1 nil
-                    `(lambda ()
-                       (set-face-foreground 'mode-line-active ,orig-fg)
-                       (set-face-background 'mode-line-active ,orig-bg)
-                       (invert-face 'mode-line-inactive)))))
+  (when visual-bell--timer
+    (cancel-timer visual-bell--timer)
+    (setq visual-bell--timer nil)
+    (copy-face 'mode-line-active--backup 'mode-line-active)
+    (copy-face 'mode-line-inactive--backup 'mode-line-inactive))
+  (copy-face 'mode-line-active 'mode-line-active--backup)
+  (copy-face 'mode-line-inactive 'mode-line-inactive--backup)
+  (invert-face 'mode-line-active)
+  (invert-face 'mode-line-inactive)
+  (setq visual-bell--timer
+        (run-with-timer 0.1 nil
+                        (lambda ()
+                          (setq visual-bell--timer nil)
+                          (copy-face 'mode-line-active--backup 'mode-line-active)
+                          (copy-face 'mode-line-inactive--backup 'mode-line-inactive)))))
 
 (defun get-buffer-line-count ()
   (format "/%d" (count-lines (point-min) (point-max))))
