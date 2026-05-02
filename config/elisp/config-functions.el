@@ -63,6 +63,27 @@
   (when (yes-or-no-p "Update locate database? ")
     (sudo-shell-command "updatedb")))
 
+(when (and (eq system-type 'gnu/linux)
+           (with-temp-buffer
+             (insert-file-contents "/etc/os-release")
+             (search-forward "ID=arch" nil t)))
+  (defun arch-update ()
+    "Runs system update utilties: yay, flatpak update"
+    (interactive)
+    (require 'vterm)
+
+    (let ((buf (vterm "*yay*")))
+      (with-current-buffer buf
+        (vterm-send-string
+         (concat "clear && "
+                 "echo \"Checking Arch repos for udpates...\n\" && "
+                 "yay && "
+                 "echo \"\" && "
+                 "echo \"Checking Flatpak for udpates...\n\" && "
+                 "fud"))
+        (vterm-send-return))
+      buf)))
+
 (defun htop ()
   "Open htop in a vterm buffer"
   (interactive)
