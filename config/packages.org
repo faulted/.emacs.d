@@ -273,6 +273,31 @@ Commenting this out while I try out doric theme
      ("C-'"  . avy-goto-char)))
 #+end_src
 
+** ligature
+Adds font ligatures to Emacs for prog modes and org-mode
+#+begin_src emacs-lisp
+  (when (string-equal (face-attribute 'default :family) "JetBrainsMono Nerd Font")
+    (use-package ligature
+      :config
+      (let ((ligature-set '("--" "---" "==" "===" "!=" "!==" "=!="
+                            "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;" "!!"
+                            "??" "???" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<:<" "<>" "<<<" ">>>"
+                            "<<" ">>" "||" "-|" "_|_" "|-" "||-" "|=" "||=" "##" "###" "####"
+                            "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>" "<$"
+                            "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</" "</>" "/>" "<!--" "<#--"
+                            "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>"
+                            "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-" "-<" "-<<" ">->" "<-<" "<-|"
+                            "<=|" "|=>" "|->" "<->" "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~"
+                            "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
+                            "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
+                            ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
+                            "<:<" ";;;")))
+        (mapc (lambda (major-mode)
+                (ligature-set-ligatures major-mode ligature-set))
+                '(prog-mode org-mode)))
+      (global-ligature-mode t)))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'config-packages)
