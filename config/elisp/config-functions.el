@@ -84,18 +84,19 @@
         (vterm-send-return))
       buf)))
 
-(defun htop ()
-  "Open htop in a vterm buffer"
-  (interactive)
-  (require 'vterm)
+(when (executable-fine "htop")
+  (defun htop ()
+    "Open htop in a vterm buffer"
+    (interactive)
+    (require 'vterm)
 
-  (let ((buf (vterm "*htop*")))
-    (with-current-buffer buf
-      
-      ;; Clear any prompt and run htop
-      (vterm-send-string "exec htop")
-      (vterm-send-return))
-    buf))
+    (let ((buf (vterm "*htop*")))
+      (with-current-buffer buf
+        
+        ;; Clear any prompt and run htop
+        (vterm-send-string "exec htop")
+        (vterm-send-return))
+      buf)))
 
 (defun describe-active-modes-minibuffer ()
   "Select and describe an active mode using the minibuffer (works with Vertico)."
