@@ -131,7 +131,7 @@ This function will only be defined for Emacs when the system is an Arch Linux sy
 
 ** htop
 #+begin_src emacs-lisp
-  (when (executable-fine "htop")
+  (when (executable-find "htop")
     (defun htop ()
       "Open htop in a vterm buffer"
       (interactive)

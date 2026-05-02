@@ -84,7 +84,7 @@
         (vterm-send-return))
       buf)))
 
-(when (executable-fine "htop")
+(when (executable-find "htop")
   (defun htop ()
     "Open htop in a vterm buffer"
     (interactive)
