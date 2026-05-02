@@ -233,9 +233,9 @@ Set up to be used with corfu
 ** rainbow-delimiters
 Commenting this out while I try out doric theme
 #+begin_src emacs-lisp
-  ;; (use-package rainbow-delimiters
-  ;;   :defer t
-  ;;   :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :defer t
+    :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 #+end_src
 
 ** multiple-cursors

@@ -147,9 +147,9 @@
   (("M-/"   . dabbrev-completion)
    ("C-M-/" . dabbrev-expand)))
 
-;; (use-package rainbow-delimiters
-;;   :defer t
-;;   :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :defer t
+  :hook ((prog-mode org-mode) . rainbow-delimiters-mode))
 
 (use-package multiple-cursors
   :demand t
