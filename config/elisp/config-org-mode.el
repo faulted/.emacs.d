@@ -66,7 +66,7 @@
    ("C-c n f" . org-roam-node-find)
    ("C-c n i" . org-roam-node-insert)
    ("C-c n c" . org-roam-capture)
-   ("C-c n j" . org-roam-dailies-capture-today)
+   ("C-c n j" . org-roam-dailies-goto-today)
    ("C-c n a" . org-agenda)
    ("C-c n r" . org-roam-rg)
    :map org-capture-mode-map
