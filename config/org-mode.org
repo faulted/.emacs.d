@@ -117,6 +117,17 @@ Configure auto-tangle so we don't have to manually tangle our init file
     (consult-ripgrep org-roam-directory))
 #+end_src
 
+** org-roam-ui
+#+begin_src emacs-lisp
+  (use-package org-roam-ui
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+
 * Initialize
 #+begin_src emacs-lisp
   (provide 'config-org-mode)
