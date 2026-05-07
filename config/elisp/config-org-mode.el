@@ -38,7 +38,9 @@
   (add-to-list 'org-structure-template-alist '("sch" . "src scheme"))
   (add-to-list 'org-structure-template-alist '("sh"  . "src shell"))
   (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
-  (setq org-agenda-files '("~/Documents/org-agenda/agenda.org")))
+  (add-to-list 'org-agenda-files '("~/Documents/org-roam/"))
+  (when (file-exists-p "~/Documents/org-agenda/agenda.org")
+    (add-to-list 'org-agenda-files '("~/Documents/org-agenda/agenda.org"))))
 
 (use-package org-auto-tangle
   :defer t
