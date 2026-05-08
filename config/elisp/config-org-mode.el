@@ -52,10 +52,6 @@
   :config
   (setq org-indent-mode-turns-on-hiding-stars nil))
 
-(with-eval-after-load 'org
-  (setq org-todo-keywords
-        '((sequence "TODO" "NEXT" "WAITING" "|" "DONE" "RESCHEDULED" "CANCELLED"))))
-
 (use-package org-roam
   :custom
   (org-roam-directory (file-truename "~/Documents/org-roam"))
@@ -63,22 +59,13 @@
   :config
   (setq org-roam-node-display-template
         (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-
-  (setq org-roam-dailies-capture-templates
-        '(("d" "default" plain
-           "* To-do items\n\n* Notes\n"
-           :target (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>")
-           :unnarrowed t)))
-  
+  (org-roam-db-autosync-mode)    
   (require 'org-roam-protocol)
   :bind
   (("C-c n l" . org-roam-buffer-toggle)
    ("C-c n f" . org-roam-node-find)
    ("C-c n i" . org-roam-node-insert)
    ("C-c n c" . org-roam-capture)
-   ("C-c n j" . org-roam-dailies-capture-today)
    ("C-c n a" . org-agenda)
    ("C-c n r" . org-roam-rg)
    :map org-capture-mode-map
@@ -87,6 +74,13 @@
    :map org-mode-map
    ("C-M-i"   . completion-at-point)
    ("C-<tab>" . org-indent-block)))
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" plain
+         "* To-do items\n\n* Notes\n"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>")
+         :unnarrowed t)))
 
 (defun my/org-roam-daily-add-newline ()
   "Add a blank line after the title in new daily notes."
@@ -100,6 +94,10 @@
                   (current-buffer)))
 
 (add-hook 'org-roam-capture-new-node-hook #'my/org-roam-daily-add-newline)
+
+(with-eval-after-load 'org
+  (setq org-todo-keywords
+        '((sequence "TODO" "NEXT" "WAITING" "|" "DONE" "RESCHEDULED" "CANCELLED"))))
 
 (defun my/org-roam-dailies-previous-file (today-file)
   "Return the most recent daily note file before TODAY-FILE."

@@ -82,13 +82,6 @@ Configure auto-tangle so we don't have to manually tangle our init file
     (setq org-indent-mode-turns-on-hiding-stars nil))
 #+end_src
 
-** org add todo keywords
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (setq org-todo-keywords
-          '((sequence "TODO" "NEXT" "WAITING" "|" "DONE" "RESCHEDULED" "CANCELLED"))))
-#+end_src
-
 ** org-roam
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -98,22 +91,13 @@ Configure auto-tangle so we don't have to manually tangle our init file
     :config
     (setq org-roam-node-display-template
           (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-    (org-roam-db-autosync-mode)
-
-    (setq org-roam-dailies-capture-templates
-          '(("d" "default" plain
-             "* To-do items\n\n* Notes\n"
-             :target (file+head "%<%Y-%m-%d>.org"
-                                "#+title: %<%Y-%m-%d>")
-             :unnarrowed t)))
-    
+    (org-roam-db-autosync-mode)    
     (require 'org-roam-protocol)
     :bind
     (("C-c n l" . org-roam-buffer-toggle)
      ("C-c n f" . org-roam-node-find)
      ("C-c n i" . org-roam-node-insert)
      ("C-c n c" . org-roam-capture)
-     ("C-c n j" . org-roam-dailies-capture-today)
      ("C-c n a" . org-agenda)
      ("C-c n r" . org-roam-rg)
      :map org-capture-mode-map
@@ -126,7 +110,18 @@ Configure auto-tangle so we don't have to manually tangle our init file
 
 *** org-roam-daily
 
+**** Setup daily capture template
+#+begin_src emacs-lisp
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" plain
+           "* To-do items\n\n* Notes\n"
+           :target (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>")
+           :unnarrowed t)))
+#+end_src
+
 **** Fix formatting of title and first header in daily note
+If we don't hook this function, then the first header is right up against the title. We use this to add an extra newline character underneath it to give the first header some room.
 #+begin_src emacs-lisp
   (defun my/org-roam-daily-add-newline ()
     "Add a blank line after the title in new daily notes."
@@ -140,6 +135,14 @@ Configure auto-tangle so we don't have to manually tangle our init file
                     (current-buffer)))
 
   (add-hook 'org-roam-capture-new-node-hook #'my/org-roam-daily-add-newline)
+#+end_src
+
+**** org add todo keywords
+This is needed for the following block the sets up todo rollovers for dailies.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-todo-keywords
+          '((sequence "TODO" "NEXT" "WAITING" "|" "DONE" "RESCHEDULED" "CANCELLED"))))
 #+end_src
 
 **** Set up to-do rollover for dailies
@@ -197,7 +200,7 @@ Configure auto-tangle so we don't have to manually tangle our init file
         (my/migrate-todos previous-file today-file))))
 #+end_src
 
-**** Hook into org-roam-daily
+***** Hook into org-roam-daily
 #+begin_src emacs-lisp
   (defun my/org-roam-dailies-goto-today-with-carryover ()
     "Open today's daily note, initializing it with the template if new,
